@@ -268,8 +268,12 @@ var Dashboard = {
               }, {
                   name : 'ipapi.co', //json https://ipapi.co/8.8.8.8/json/
                   url : 'https://ipapi.co/'+ip
+              }, {
+                  name : 'whois.com',
+                  url : 'https://www.whois.com/whois/'+ip
               }];
-              //http://freegeoip.net/json/83.65.190.82 e integrare mappa https://stackoverflow.com/questions/17290256/get-google-map-link-with-latitude-longitude
+              //http://freegeoip.net/json/83.65.190.82
+              //https://stackoverflow.com/questions/17290256/get-google-map-link-with-latitude-longitude
               
               var list = '';
               ipAnalyzeServiceList.forEach(function(ipAnalyzeService){
