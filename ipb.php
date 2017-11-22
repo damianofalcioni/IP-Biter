@@ -165,6 +165,11 @@ var Dashboard = {
           Utils.callService('ping', 'id='+uuid+'&time='+time+'&rnd='+Utils.generateUUID(), null, function(data){
               successCallback(data.valid);
           }, failureCallback);
+      },
+      callWhoisService : function(ip, successCallback, failureCallback){
+          Utils.callService('ipwhois', 'ip='+ip, null, function(data){
+              successCallback(data.whoisResults);
+          }, failureCallback);
       }
   },
   
@@ -271,9 +276,14 @@ var Dashboard = {
               }, {
                   name : 'whois.com',
                   url : 'https://www.whois.com/whois/'+ip
+              }, {
+                  name : 'ripe.net statistics',
+                  url : 'https://stat.ripe.net/'+ip
               }];
               //http://freegeoip.net/json/83.65.190.82
               //https://stackoverflow.com/questions/17290256/get-google-map-link-with-latitude-longitude
+              //https://apps.db.ripe.net/search/query.html?searchtext=83.65.190.82&bflag=false&source=RIPE#resultsAnchor#resultsAnchor
+              //https://whois.arin.net/rest/nets;q=8.8.8.8?showDetails=true&showARIN=false&showNonArinTopLevelNet=false&ext=netref2
               
               var list = '';
               ipAnalyzeServiceList.forEach(function(ipAnalyzeService){
@@ -300,7 +310,7 @@ var Dashboard = {
               var domId = Utils.generateUUID();
               $('#reportsDiv').prepend(
                   $('<div class="list-group-item">').append(
-                      $('<div class="row link" title="Click for details">').append(
+                      $('<div class="row link" id="'+domId+'_overview_div" title="Click for details">').append(
                           $('<div class="col-lg-2">').append(
                               '<h4><span class="label label-default">'+track.time+'</span></h4>'
                           )
@@ -317,7 +327,19 @@ var Dashboard = {
                                   _generateAnalyzeIPButtons(track.ip)
                               )
                           )
-                      ).click(function(e){
+                      ).append(
+                          $('<div class="col-lg-4">').append(
+                                  $('<div class="input-group">').append(
+                                      '<span class="input-group-addon">Owner: </span>'
+                                  ).append(
+                                      $('<input type="text" id="'+domId+'_ip_owner_txt" class="form-control" readonly>').click(function(e){
+                                          $(this).select();
+                                          document.execCommand("copy");
+                                      })
+                                  )
+                              )
+                          )
+                      .click(function(e){
                           if (e.target.tagName != 'BUTTON' && e.target.tagName != 'A' && e.target.tagName != 'INPUT')
                               $('#'+domId+'_headers_div').toggle();
                       })
@@ -346,6 +368,23 @@ var Dashboard = {
                       )
                   ).hide().fadeIn(500)
               );
+              Dashboard.services.callWhoisService(track.ip, function(whoisResults){
+                  $('#'+domId+'_ip_owner_txt').val(whoisResults.netName).popover({
+                      placement : 'auto right',
+                      container : 'body',
+                      html : true,
+                      title : 'WHOIS ' + track.ip,
+                      content : function(){
+                          var html = '<pre>'+whoisResults.output+'</pre>';
+                          return html;
+                      }(),
+                      
+                      trigger : 'hover click'
+                  });
+              }, function(error){
+                  Utils.showError(error, $('#reportsTable'));
+              });
+              
           });
       
       }, function(error){
@@ -771,6 +810,9 @@ $(document).ready(Dashboard.initialize);
     color: #FFFFFF;
     background-color: #428bca;
 }
+.popover {
+    max-width: 50em !important;
+}
     </style>
 </head>
 <body>
@@ -985,7 +1027,7 @@ if(
 if(isset($_GET['op']) && $_GET['op'] == 'shortening'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['url']))
+        if(!isset($_GET['url']) || $_GET['url']=='')
             throw new Exception('url parameter required');
         $shortenedUrl = @file_get_contents('http://tinyurl.com/api-create.php?url='.$_GET['url']);
         echo '{"status" : 0, "shortenedUrl" : "'.$shortenedUrl.'"}';
@@ -1032,7 +1074,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'save'){
 if(isset($_GET['op']) && $_GET['op'] == 'loadConfig'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['id']))
+        if(!isset($_GET['id']) || $_GET['id']=='')
             throw new Exception('id parameter required');
         $configUUID = $_GET['id'];
         if(!file_exists(getcwd().'/'.$configFolder.'/'.$configUUID.'.json'))
@@ -1049,7 +1091,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'loadConfig'){
 if(isset($_GET['op']) && $_GET['op'] == 'loadTrack'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['id']))
+        if(!isset($_GET['id']) || $_GET['id']=='')
             throw new Exception('id parameter required');
         $configUUID = $_GET['id'];
         if(!file_exists(getcwd().'/'.$configFolder.'/'.$configUUID.'.json'))
@@ -1070,9 +1112,9 @@ if(isset($_GET['op']) && $_GET['op'] == 'loadTrack'){
 if(isset($_GET['op']) && $_GET['op'] == 'ping'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['id']))
+        if(!isset($_GET['id']) || $_GET['id']=='')
             throw new Exception('id parameter required');
-        if(!isset($_GET['time']))
+        if(!isset($_GET['time']) || $_GET['time']=='')
             throw new Exception('time parameter required');
         $trackUUID = $_GET['id'];
         $localTime = $_GET['time'];
@@ -1087,9 +1129,65 @@ if(isset($_GET['op']) && $_GET['op'] == 'ping'){
     exit();
 }
 
+if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
+    header('Content-Type: application/json; charset=utf8');
+    try{
+        if(!isset($_GET['ip']) || $_GET['ip']=='')
+            throw new Exception('ip parameter required');
+        $ip = $_GET['ip'];
+        /*WHOIS IP Server list
+         whois.afrinic.net -> Africa -  but returns data for ALL locations worldwide
+         whois.lacnic.net -> Latin America and Caribbean but returns data for ALL locations worldwide
+         whois.apnic.net -> Asia/Pacific only
+         whois.arin.net -> North America only
+         whois.ripe.net -> Europe, Middle East and Central Asia only
+         */
+        $whoisserver = 'whois.lacnic.net';
+        if(!($fp = fsockopen($whoisserver, 43, $errno, $errstr, 10)))
+            throw new Exception("Error contacting the WHOIS server $whoisserver : $errstr ($errno)");
+        
+        fprintf($fp, "%s\r\n", $ip);
+        $whoisResultString = "";
+        $netNameString = "";
+        $lineCount = 0;
+        while(!feof($fp)){
+            $line = fgets($fp);
+            if(trim($line[0])!='' && $line[0]!='#' && $line[0]!='%'){
+                $whoisResultString.=$line;
+                $lineCount++;
+                if(strpos($line, ':') !== false){
+                    $lineSplit = explode(':', $line);
+                    if(strtolower($lineSplit[0])=='netname')
+                        $netNameString = trim($lineSplit[1]);
+                } else {
+                    if($lineCount == 2)
+                        $netNameString = trim(explode('(NET', $line)[0]);
+                }
+            }
+        }
+        fclose($fp);
+
+        $ret = json_encode((object) array(
+            'status' => 0,
+            'whoisResults' => (object) array(
+                'output' => utf8_encode($whoisResultString),
+                'netName' => utf8_encode($netNameString)
+            )
+        ));
+        
+        if(json_last_error()!=0)
+            throw new Exception("Error encoding the JSON response");
+        echo $ret;
+    }catch(Exception $ex){
+        echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
+        $logError($ex->getMessage());
+    }
+    exit();
+}
+
 if(isset($_GET['op']) && $_GET['op'] == 'i'){
     try{
-        if(!isset($_GET['tid']))
+        if(!isset($_GET['tid']) || $_GET['tid']=='')
             throw new Exception('tid parameter required');
         $trackUUID = $_GET['tid'];
         if(!file_exists(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json'))
@@ -1129,9 +1227,9 @@ if(isset($_GET['op']) && $_GET['op'] == 'i'){
 
 if(isset($_GET['op']) && $_GET['op'] == 'l'){
     try{
-        if(!isset($_GET['tid']))
+        if(!isset($_GET['tid']) || $_GET['tid']=='')
             throw new Exception('tid parameter required');
-        if(!isset($_GET['lid']))
+        if(!isset($_GET['lid']) || $_GET['lid']=='')
             throw new Exception('lid parameter required');
         $trackUUID = $_GET['tid'];
         $linkUUID = $_GET['lid'];
