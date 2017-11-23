@@ -108,11 +108,22 @@ $dashboardPageSecret = '';
 $configFolder = 'configs';
 $reportFolder = 'reports';
 $errorLogFile = 'error.log';
+$debugMode = false;
 /*END CONFIGURATION SECTION*/
 
+error_reporting($debugMode?-1:0);
+ini_set("display_errors", $debugMode?1:0);
+
 $logError = function($message) use ($errorLogFile){
-    file_put_contents(getcwd().'/'.$errorLogFile, date('d/m/Y H:i:s', time()).' '.$_SERVER['REMOTE_ADDR'].' '.$message."\r\n", FILE_APPEND);
+    file_put_contents(__DIR__.'/'.$errorLogFile, date('d/m/Y H:i:s', time()).' '.$_SERVER['REMOTE_ADDR'].' '.$message."\r\n", FILE_APPEND);
 };
+
+function shutdownHandler($logError) {
+    $error = error_get_last();
+    if ($error!=null)
+        $logError("ERROR on line ".$error['line'].": ".$error['message']);
+}
+register_shutdown_function('shutdownHandler', $logError);
 
 if(
     ((!isset($_REQUEST['op']) && $dashboardPage == '') || (isset($_REQUEST['op']) && $_REQUEST['op'] == $dashboardPage)) &&
