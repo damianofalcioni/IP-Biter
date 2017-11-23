@@ -112,7 +112,8 @@ $debugMode = false;
 /*END CONFIGURATION SECTION*/
 
 error_reporting($debugMode?-1:0);
-ini_set("display_errors", $debugMode?1:0);
+if(function_exists('ini_set'))
+    ini_set("display_errors", $debugMode?1:0);
 
 $logError = function($message) use ($errorLogFile){
     file_put_contents(__DIR__.'/'.$errorLogFile, date('d/m/Y H:i:s', time()).' '.$_SERVER['REMOTE_ADDR'].' '.$message."\r\n", FILE_APPEND);
@@ -124,6 +125,22 @@ function shutdownHandler($logError) {
         $logError("ERROR on line ".$error['line'].": ".$error['message']);
 }
 register_shutdown_function('shutdownHandler', $logError);
+
+if(!function_exists('getallheaders')){
+    function getallheaders() {
+        $retval = array();
+        foreach($_SERVER as $key => $val){
+            $keySplit = explode('_' , $key);
+            if(array_shift($keySplit) == 'HTTP'){
+                array_walk($keySplit, function(&$singleVal){
+                    $singleVal = ucfirst(strtolower($singleVal));
+                });
+                $retval[join('-', $keySplit)] = $val;
+            }
+        } 
+        return $retval; 
+    }
+}
 
 if(
     ((!isset($_REQUEST['op']) && $dashboardPage == '') || (isset($_REQUEST['op']) && $_REQUEST['op'] == $dashboardPage)) &&
