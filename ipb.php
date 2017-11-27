@@ -410,13 +410,13 @@ var Dashboard = {
                       trigger : 'hover click'
                   });
               }, function(error){
-                  Utils.showError(error, $('#reportsTable'));
+                  Utils.showError(error, $('#trackReportMsgs'));
               });
               
           });
       
       }, function(error){
-          Utils.showError(error, $('#reportsTable'));
+          Utils.showError(error, $('#trackReportMsgs'));
       });
   },
   
@@ -1163,49 +1163,59 @@ if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
         if(!isset($_GET['ip']) || $_GET['ip']=='')
             throw new Exception('ip parameter required');
         $ip = $_GET['ip'];
-        /*WHOIS IP Server list
-         whois.afrinic.net -> Africa -  but returns data for ALL locations worldwide
-         whois.lacnic.net -> Latin America and Caribbean but returns data for ALL locations worldwide
-         whois.apnic.net -> Asia/Pacific only
-         whois.arin.net -> North America only
-         whois.ripe.net -> Europe, Middle East and Central Asia only
-         */
-        $whoisserver = 'whois.lacnic.net';
-        if(!($fp = fsockopen($whoisserver, 43, $errno, $errstr, 10)))
-            throw new Exception("Error contacting the WHOIS server $whoisserver : $errstr ($errno)");
         
-        fprintf($fp, "%s\r\n", $ip);
-        $whoisResultString = "";
-        $netNameString = "";
-        $lineCount = 0;
-        while(!feof($fp)){
-            $line = fgets($fp);
-            if(trim($line[0])!='' && $line[0]!='#' && $line[0]!='%'){
-                $whoisResultString.=$line;
-                $lineCount++;
-                if(strpos($line, ':') !== false){
-                    $lineSplit = explode(':', $line);
-                    if(strtolower($lineSplit[0])=='netname')
-                        $netNameString = trim($lineSplit[1]);
-                } else {
-                    if($lineCount == 2)
-                        $netNameString = trim(explode('(NET', $line)[0]);
+        if(empty(session_id()))
+            session_start();
+        
+        if(isset($_SESSION['whois_'.$ip])){
+            echo $_SESSION['whois_'.$ip];
+        } else {
+            /*WHOIS IP Server list
+             whois.afrinic.net -> Africa -  but returns data for ALL locations worldwide
+             whois.lacnic.net -> Latin America and Caribbean but returns data for ALL locations worldwide
+             whois.apnic.net -> Asia/Pacific only
+             whois.arin.net -> North America only
+             whois.ripe.net -> Europe, Middle East and Central Asia only
+             */
+            $whoisserver = 'whois.lacnic.net';
+            if(!($fp = fsockopen($whoisserver, 43, $errno, $errstr, 10)))
+                throw new Exception("Error contacting the WHOIS server $whoisserver : $errstr ($errno)");
+            
+            fprintf($fp, "%s\r\n", $ip);
+            $whoisResultString = "";
+            $netNameString = "";
+            $lineCount = 0;
+            while(!feof($fp)){
+                $line = fgets($fp);
+                if(trim($line[0])!='' && $line[0]!='#' && $line[0]!='%'){
+                    $whoisResultString.=$line;
+                    $lineCount++;
+                    if(strpos($line, ':') !== false){
+                        $lineSplit = explode(':', $line);
+                        if(strtolower($lineSplit[0])=='netname')
+                            $netNameString = trim($lineSplit[1]);
+                    } else {
+                        if($lineCount == 2)
+                            $netNameString = trim(explode('(NET', $line)[0]);
+                    }
                 }
             }
+            fclose($fp);
+    
+            $ret = json_encode((object) array(
+                'status' => 0,
+                'whoisResults' => (object) array(
+                    'output' => utf8_encode($whoisResultString),
+                    'netName' => utf8_encode($netNameString)
+                )
+            ));
+            
+            if(json_last_error()!=0)
+                throw new Exception("Error encoding the JSON response");
+            $_SESSION['whois_'.$ip] = $ret;
+            echo $ret;
         }
-        fclose($fp);
-
-        $ret = json_encode((object) array(
-            'status' => 0,
-            'whoisResults' => (object) array(
-                'output' => utf8_encode($whoisResultString),
-                'netName' => utf8_encode($netNameString)
-            )
-        ));
-        
-        if(json_last_error()!=0)
-            throw new Exception("Error encoding the JSON response");
-        echo $ret;
+        session_write_close();
     }catch(Exception $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
