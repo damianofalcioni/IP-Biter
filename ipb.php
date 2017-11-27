@@ -997,7 +997,7 @@ $(document).ready(Dashboard.initialize);
                     
                     <div class="row form-group">
                         <div class="col-lg-2">
-                            <button id="saveConfigBtn" class="btn btn-default" type="button">Save</button>
+                            <button id="saveConfigBtn" class="btn btn-primary btn-lg" type="button">Save</button>
                         </div>
                         <div class="col-lg-10" id="saveConfigMsgs"></div>
                     </div>
