@@ -132,8 +132,8 @@ if(!function_exists('getallheaders')){
         foreach($_SERVER as $key => $val){
             $keySplit = explode('_' , $key);
             if(array_shift($keySplit) == 'HTTP'){
-                array_walk($keySplit, function(&$singleVal){
-                    $singleVal = ucfirst(strtolower($singleVal));
+                array_walk($keySplit, function(&$singleKey){
+                    $singleKey = ucfirst(strtolower($singleKey));
                 });
                 $retval[join('-', $keySplit)] = $val;
             }
@@ -1069,8 +1069,8 @@ if(isset($_GET['op']) && $_GET['op'] == 'shortening'){
 if(isset($_GET['op']) && $_GET['op'] == 'save'){
     header('Content-Type: application/json');
     try{
-        $configFolderFull = getcwd().'/'.$configFolder;
-        $reportFolderFull = getcwd().'/'.$reportFolder;
+        $configFolderFull = __DIR__.'/'.$configFolder;
+        $reportFolderFull = __DIR__.'/'.$reportFolder;
         $jsonString = file_get_contents('php://input');
         $json = json_decode($jsonString);
         if(!isset($json->uuid) || $json->uuid=='')
@@ -1105,9 +1105,9 @@ if(isset($_GET['op']) && $_GET['op'] == 'loadConfig'){
         if(!isset($_GET['id']) || $_GET['id']=='')
             throw new Exception('id parameter required');
         $configUUID = $_GET['id'];
-        if(!file_exists(getcwd().'/'.$configFolder.'/'.$configUUID.'.json'))
+        if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
-        $configString = file_get_contents(getcwd().'/'.$configFolder.'/'.$configUUID.'.json');
+        $configString = file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json');
         echo '{"status" : 0, "config" : '.$configString.'}';
     }catch(Exception $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
@@ -1122,13 +1122,13 @@ if(isset($_GET['op']) && $_GET['op'] == 'loadTrack'){
         if(!isset($_GET['id']) || $_GET['id']=='')
             throw new Exception('id parameter required');
         $configUUID = $_GET['id'];
-        if(!file_exists(getcwd().'/'.$configFolder.'/'.$configUUID.'.json'))
+        if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
-        $config = json_decode(file_get_contents(getcwd().'/'.$configFolder.'/'.$configUUID.'.json'));
+        $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
         $trackUUID = $config->trackUUID;
-        if(!file_exists(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json'))
+        if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid track id '. $trackUUID);
-        $trackString = file_get_contents(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json');
+        $trackString = file_get_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json');
         echo '{"status" : 0, "track" : '.$trackString.'}';
     }catch(Exception $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
@@ -1146,9 +1146,9 @@ if(isset($_GET['op']) && $_GET['op'] == 'ping'){
             throw new Exception('time parameter required');
         $trackUUID = $_GET['id'];
         $localTime = $_GET['time'];
-        if(!file_exists(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json'))
+        if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid id '. $trackUUID);
-        $fileTime = filemtime(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json');
+        $fileTime = filemtime(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json');
         echo '{"status" : 0, "valid" : '.($fileTime <= $localTime?'true':'false').'}';
     }catch(Exception $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
@@ -1218,12 +1218,12 @@ if(isset($_GET['op']) && $_GET['op'] == 'i'){
         if(!isset($_GET['tid']) || $_GET['tid']=='')
             throw new Exception('tid parameter required');
         $trackUUID = $_GET['tid'];
-        if(!file_exists(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json'))
+        if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid tid '. $trackUUID);
-        $track = json_decode(file_get_contents(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json'));
-        if(!file_exists(getcwd().'/'.$configFolder.'/'.$track->configUUID.'.json'))
+        $track = json_decode(file_get_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'));
+        if(!file_exists(__DIR__.'/'.$configFolder.'/'.$track->configUUID.'.json'))
             throw new Exception('Internal Error: impossible to find the configuration file associated to the tid '. $trackUUID);
-        $config = json_decode(file_get_contents(getcwd().'/'.$configFolder.'/'.$track->configUUID.'.json'));
+        $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$track->configUUID.'.json'));
         if($config->trackingEnabled === TRUE && !isset($_COOKIE[$track->configUUID])){
             array_push($track->trackList, array(
                 'time'=>date('d-m-Y H:i:s', time()), 
@@ -1231,7 +1231,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'i'){
                 'headers' => getallheaders()
             ));
             $track->time = time();
-            file_put_contents(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json', json_encode($track));
+            file_put_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json', json_encode($track));
             if(function_exists('mail') && isset($config->notificationAddress) && $config->notificationAddress!=''){
                 $mailText = '<html><body><p>Your tracking image has been visualized right now by '.$_SERVER['REMOTE_ADDR'].'.</p><p>Check all the details in the <a href="'.(isset($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'],'?').'?op='.$dashboardPage.'&uuid='.$config->uuid.'">DASHBOARD</a></p></body></html>';
                 mail($config->notificationAddress, '[Tracking Live Report] '.$config->mailId, wordwrap($mailText, 70, "\r\n"), "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n");
@@ -1261,12 +1261,12 @@ if(isset($_GET['op']) && $_GET['op'] == 'l'){
             throw new Exception('lid parameter required');
         $trackUUID = $_GET['tid'];
         $linkUUID = $_GET['lid'];
-        if(!file_exists(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json'))
+        if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid tid '. $trackUUID);
-        $track = json_decode(file_get_contents(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json'));
-        if(!file_exists(getcwd().'/'.$configFolder.'/'.$track->configUUID.'.json'))
+        $track = json_decode(file_get_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'));
+        if(!file_exists(__DIR__.'/'.$configFolder.'/'.$track->configUUID.'.json'))
             throw new Exception('Internal Error: impossible to find the configuration file associated to the tid '. $trackUUID);
-        $config = json_decode(file_get_contents(getcwd().'/'.$configFolder.'/'.$track->configUUID.'.json'));
+        $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$track->configUUID.'.json'));
         if($config->trackingEnabled === TRUE && !isset($_COOKIE[$track->configUUID])){
             array_push($track->trackList, array(
                 'time'=>date('d-m-Y H:i:s', time()),
@@ -1274,7 +1274,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'l'){
                 'headers' => getallheaders()
             ));
             $track->time = time();
-            file_put_contents(getcwd().'/'.$reportFolder.'/'.$trackUUID.'.json', json_encode($track));
+            file_put_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json', json_encode($track));
             if(function_exists('mail') && isset($config->notificationAddress) && $config->notificationAddress!=''){
                 $mailText = '<html><body><p>Your tracking link has been clicked right now by '.$_SERVER['REMOTE_ADDR'].'.</p><p>Check all the details in the <a href="'.(isset($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'],'?').'?op='.$dashboardPage.'&uuid='.$config->uuid.'">DASHBOARD</a></p></body></html>';
                 mail($config->notificationAddress, '[Tracking Live Report] '.$config->mailId, wordwrap($mailText, 70, "\r\n"), "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n");
