@@ -108,6 +108,7 @@ $dashboardPageSecret = '';
 $configFolder = 'configs';
 $reportFolder = 'reports';
 $errorLogFile = 'error.log';
+$darkTheme = true;
 $debugMode = false;
 /*END CONFIGURATION SECTION*/
 
@@ -152,8 +153,7 @@ if(
 <head>
     <title>IP-Biter Dashboard</title>
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <!-- <link rel="stylesheet" type="text/css" href="https://bootswatch.com/3/darkly/bootstrap.min.css">-->
+    <link rel="stylesheet" type="text/css" href="<?php echo $darkTheme==false?'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css':'https://bootswatch.com/3/slate/bootstrap.min.css';?>">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript">
@@ -374,7 +374,7 @@ var Dashboard = {
                   ).append(
                       $('<div class="row" id="'+domId+'_headers_div" style="display:none;">').append(
                           $('<div class="col-lg-12">').append(
-                              $('<table class="table table-condensed">').append(
+                              $('<table class="table table-condensed table-hover">').append(
                                   $('<tbody>').append(function(){
                                       var ret = [];
                                       ret.push('<tr><th style="vertical-align:middle; white-space:nowrap; width:1%;">Header Fields</th><th style="vertical-align:middle; white-space:nowrap; width:1%;"></th><th></th></tr>');
@@ -1030,6 +1030,7 @@ if(
 ?>
 <html>
     <head>
+        <link rel="stylesheet" type="text/css" href="<?php echo $darkTheme==false?'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css':'https://bootswatch.com/3/slate/bootstrap.min.css';?>">
         <style type="text/css">
             form{
                 position: absolute;
@@ -1042,9 +1043,9 @@ if(
         </style>
     </head>
     <body>
-        <form method="post">
-            <input name="secret" type="password" autofocus>
-            <input type="submit" value="OK">
+        <form class="form-inline" method="post">
+            <input name="secret" class="form-control" type="password" autofocus>
+            <input type="submit" class="btn btn-primary" value="OK">
         </form>
     </body>
 </html>
@@ -1244,7 +1245,10 @@ if(isset($_GET['op']) && $_GET['op'] == 'i'){
             file_put_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json', json_encode($track));
             if(function_exists('mail') && isset($config->notificationAddress) && $config->notificationAddress!=''){
                 $mailText = '<html><body><p>Your tracking image has been visualized right now by '.$_SERVER['REMOTE_ADDR'].'.</p><p>Check all the details in the <a href="'.(isset($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'],'?').'?op='.$dashboardPage.'&uuid='.$config->uuid.'">DASHBOARD</a></p></body></html>';
-                mail($config->notificationAddress, '[Tracking Live Report] '.$config->mailId, wordwrap($mailText, 70, "\r\n"), "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n");
+                $mailSent = mail($config->notificationAddress, '[Tracking Live Report] '.$config->mailId, wordwrap($mailText, 70, "\r\n"), "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n");
+                if(!$mailSent)
+                    $logError("Mail not sended: ". error_get_last()!=null?error_get_last()['message']:'No PHP error detected');
+                
             }
         }  
         $headerAddedList = array();
@@ -1287,7 +1291,9 @@ if(isset($_GET['op']) && $_GET['op'] == 'l'){
             file_put_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json', json_encode($track));
             if(function_exists('mail') && isset($config->notificationAddress) && $config->notificationAddress!=''){
                 $mailText = '<html><body><p>Your tracking link has been clicked right now by '.$_SERVER['REMOTE_ADDR'].'.</p><p>Check all the details in the <a href="'.(isset($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'],'?').'?op='.$dashboardPage.'&uuid='.$config->uuid.'">DASHBOARD</a></p></body></html>';
-                mail($config->notificationAddress, '[Tracking Live Report] '.$config->mailId, wordwrap($mailText, 70, "\r\n"), "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n");
+                $mailSent = mail($config->notificationAddress, '[Tracking Live Report] '.$config->mailId, wordwrap($mailText, 70, "\r\n"), "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n");
+                if(!$mailSent)
+                    $logError("Mail not sended: ". error_get_last()!=null?error_get_last()['message']:'No PHP error detected');
             }
         }
         if(!isset($config->trackingLinks->$linkUUID))
