@@ -26,6 +26,9 @@ who visualize the image or open the links.
 Give it a try!
 
 ## Getting Started
+#### Deploy IP-Biter
+0) Copy ipb.php in your PHP server and optionally create a .htaccess file as described in the next security notes
+    - Some configurable parameters are available in the firsts uncommented PHP lines of the ipb.php file, identified by the comment "START CONFIGURATION SECTION"
 #### Access the Dashboard
 1) Access the dashboard through ipb.php?op=$dashboardPage (or through ipb.php if $dashboardPage=='')
     - If $dashboardPageSecret!='' then a login page will appear asking for the $dashboardPageSecret value  
