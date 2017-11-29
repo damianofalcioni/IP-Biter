@@ -72,7 +72,7 @@ From this url you are not able to access the relative dashboard.
 Did not trust me?
 Try to hack it as a challange and report me your success; you will be rewarded with a coffee <3
 -->
-Have a look at the [DEMO](http://ipbiter.000webhostapp.com/?op=l&tid=9fae1fc1-a4dd-44f1-bbaa-0cede56d3cdc&lid=5ab6bbdb-8f7c-45ea-9f33-18d0db7cfd79) (notifications limited at 50 mail/day and 1h/day downtime expected)
+Have a look at the [DEMO1](http://ipbiter.000webhostapp.com/?op=l&tid=9fae1fc1-a4dd-44f1-bbaa-0cede56d3cdc&lid=5ab6bbdb-8f7c-45ea-9f33-18d0db7cfd79) (notifications limited at 50 mail/day and 1h/day downtime expected) or at [DEMO2](http://ipbiter.rf.gd/?op=dashboard) (notifications via mail not allowed)
 
 ## Support Me <3
 <!--
