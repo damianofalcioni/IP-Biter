@@ -27,6 +27,8 @@ who visualize the image or open the links.
 
 Give it a try!
 
+![](https://user-images.githubusercontent.com/8982949/33380631-09b9720e-d51c-11e7-9da1-b6886569e399.png)
+
 ## Getting Started
 #### Deploy IP-Biter
 0) Copy ipb.php in your PHP server and optionally create a .htaccess file as described in the next security notes
