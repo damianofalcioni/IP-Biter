@@ -43,7 +43,7 @@ Give it a try!
     - It is possible to left the original image url empty. In this case an empty image will be used.
 4) Add tracking links if needed
     - It is possible to left the original link empty. In this case the link will generate a 404 page.
-5) Save the configuration
+5) **Save the configuration**
 6) Distribute the generated image or the links to start the tracking
     - You can click the copy button and paste in a html rich email editor like gmail
     - NOTE: If you try to open the generated image or links but have in the same browser the dashboard page opened and loaded, your request will not be tracked (self-tracking prevention feature)
