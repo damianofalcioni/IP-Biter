@@ -155,6 +155,7 @@ if(
 <html>
 <head>
     <title>IP-Biter Dashboard</title>
+    <link rel="icon" href="data:image/png;base64,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">
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
     <link rel="stylesheet" type="text/css" href="<?php echo $darkTheme==false?'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css':'https://bootswatch.com/3/slate/bootstrap.min.css';?>">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -1220,6 +1221,22 @@ if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
             echo $ret;
         }
         session_write_close();
+    }catch(Exception $ex){
+        echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
+        $logError($ex->getMessage());
+    }
+    exit();
+}
+
+if(isset($_GET['op']) && $_GET['op'] == 'preventTracking'){
+    header('Content-Type: application/json');
+    try{
+        if(!isset($_GET['id']) || $_GET['id']=='')
+            throw new Exception('id parameter required');            
+        $configUUID = $_GET['id'];
+        if(!setcookie($configUUID, "1"))
+            throw new Exception('Impossible to set the cookie: '.(error_get_last()!=null?error_get_last()['message']:'No PHP error detected'));
+        echo '{"status" : 0 }';
     }catch(Exception $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
