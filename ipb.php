@@ -633,6 +633,12 @@ var Dashboard = {
       $('#trackingImageEmoji1Btn').click(function(){
           $('#trackingImageOriginalUrlTxt').val('https://www.facebook.com/images/emoji.php/v9/z6/1/32/1f642.png').trigger('change');
       });
+      $('#trackingImageEmoji2Btn').click(function(){
+          $('#trackingImageOriginalUrlTxt').val('https://www.facebook.com/images/emoji.php/v9/z11/1/32/1f609.png').trigger('change');
+      });
+      $('#trackingImageEmoji3Btn').click(function(){
+          $('#trackingImageOriginalUrlTxt').val('https://www.facebook.com/images/emoji.php/v9/z78/1/32/1f4e7.png').trigger('change');
+      });
       $('#trackingImageUploadBtn').click(function(e){
           e.preventDefault();
           $("#trackingImageFileInput").trigger('click');
@@ -919,6 +925,8 @@ $(document).ready(Dashboard.initialize);
                                             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Image selection <span class="caret"></span></button>
                                             <ul class="dropdown-menu dropdown-menu-right">
                                                 <li><a href="#" id="trackingImageEmoji1Btn">Emoji :)</a></li>
+                                                <li><a href="#" id="trackingImageEmoji2Btn">Emoji ;)</a></li>
+                                                <li><a href="#" id="trackingImageEmoji3Btn">Emoji @Mail</a></li>
                                                 <li class="divider"></li>
                                                 <li><a href="#" id="trackingImageUploadBtn">Upload custom image</a><input id="trackingImageFileInput" type="file" accept="image/*" style="display: none;"></li>
                                             </ul>
