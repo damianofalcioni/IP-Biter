@@ -1099,8 +1099,10 @@ if(isset($_GET['op']) && $_GET['op'] == 'save'){
         } else {
             $reportJson = json_decode(file_get_contents($reportFolderFull.'/'.$json->trackUUID.'.json'));
             if($reportJson->configUUID != $json->uuid){
-                $reportJson->configUUID = $json->uuid;
-                file_put_contents($reportFolderFull.'/'.$json->trackUUID.'.json', json_encode($reportJson));
+                throw new Exception('trackUUID already in use by another configuration.');
+                //SECURITY FIX: allowing the uuid update into the tracking file (next two lines) give the possibility for a tracked user to save a new configuration using its traking uuid, stealing its traking file to the original configuration
+                //$reportJson->configUUID = $json->uuid;
+                //file_put_contents($reportFolderFull.'/'.$json->trackUUID.'.json', json_encode($reportJson));
             }
         }
         file_put_contents($configFolderFull.'/'.$json->uuid.'.json', $jsonString);
