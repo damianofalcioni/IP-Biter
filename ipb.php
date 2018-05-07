@@ -1182,9 +1182,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
         if(empty(session_id()))
             session_start();
         
-        if(isset($_SESSION['whois_'.$ip])){
-            echo $_SESSION['whois_'.$ip];
-        } else {
+        if(!isset($_SESSION['whois_'.$ip])) {
             /*WHOIS IP Server list
              whois.afrinic.net -> Africa -  but returns data for ALL locations worldwide
              whois.lacnic.net -> Latin America and Caribbean but returns data for ALL locations worldwide
@@ -1192,6 +1190,9 @@ if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
              whois.arin.net -> North America only
              whois.ripe.net -> Europe, Middle East and Central Asia only
              */
+            $_SESSION['whois_'.$ip] = '';
+            session_write_close();
+            
             $whoisserver = 'whois.lacnic.net';
             if(!($fp = fsockopen($whoisserver, 43, $errno, $errstr, 10)))
                 throw new Exception("Error contacting the WHOIS server $whoisserver : $errstr ($errno)");
@@ -1227,8 +1228,16 @@ if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
             
             if(json_last_error()!=0)
                 throw new Exception("Error encoding the JSON response");
+            session_start();
             $_SESSION['whois_'.$ip] = $ret;
             echo $ret;
+        } else if($_SESSION['whois_'.$ip]=='') {
+            do {
+                sleep(1);
+            } while($_SESSION['whois_'.$ip]=='');
+            echo $_SESSION['whois_'.$ip];
+        } else {
+            echo $_SESSION['whois_'.$ip];
         }
         session_write_close();
     }catch(Exception $ex){
