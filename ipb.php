@@ -1,7 +1,7 @@
 <?php
 /*
     IP-Biter: The Hacker-friendly Tracking Framework
-    Copyright (C) 2017-2018  Damiano Falcioni (damiano.falcioni@gmail.com)
+    Copyright (C) 2017  Damiano Falcioni (damiano.falcioni@gmail.com)
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -372,13 +372,21 @@ var Dashboard = {
                               )
                           )
                       .click(function(e){
-                          if (e.target.tagName != 'BUTTON' && e.target.tagName != 'A' && e.target.tagName != 'INPUT')
+                          if (e.target.tagName != 'BUTTON' && e.target.tagName != 'A' && e.target.tagName != 'INPUT'){
                               $('#'+domId+'_headers_div').toggle();
+                              $('#'+domId+'_headers_div').find('.headerTxt').each(function () {
+                                  $(this).css("height", $(this).prop("scrollHeight")+"px");
+                                  $(this).css("width", $(this).prop("scrollWidth")+"px"); 
+                              });
+                              $('#'+domId+'_headers_div').find('.valueTxt').each(function () {
+                                  $(this).css("height", $(this).prop("scrollHeight")+"px");
+                              });
+                          }
                       })
                   ).append(
                       $('<div class="row" id="'+domId+'_headers_div" style="display:none;">').append(
                           $('<div class="col-lg-12">').append(
-                              $('<table class="table table-condensed table-hover">').append(
+                              $('<table class="table table-condensed">').append(
                                   $('<tbody>').append(function(){
                                       var ret = [];
                                       ret.push('<tr><th style="vertical-align:middle; white-space:nowrap; width:1%;">Header Fields</th><th style="vertical-align:middle; white-space:nowrap; width:1%;"></th><th></th></tr>');
@@ -391,7 +399,8 @@ var Dashboard = {
                                               analysisButton = _generateAnalyzeIPButtons(track.headers[header].split(',')[0]);
                                           if(headerLowCase == 'x-real-ip')
                                               analysisButton = _generateAnalyzeIPButtons(track.headers[header]);
-                                          ret.push('<tr><td style="vertical-align:middle; white-space:nowrap;">'+header+'</td><td style="vertical-align:middle; white-space:nowrap;">'+(analysisButton!=null?analysisButton:'')+'</td><td style="vertical-align:middle;">'+track.headers[header]+'</td></tr>');
+                                          //SECURITY FIX 15-11-2018 for XSS Vulnerability reported by elpsycongroo: header visualization inside a textarea avoid content parsing so XSS can not be exploited
+                                          ret.push('<tr><td style="vertical-align:middle; white-space:nowrap;"><textarea wrap="off" class="headerTxt" readonly>'+header+'</textarea></td><td style="vertical-align:middle; white-space:nowrap;">'+(analysisButton!=null?analysisButton:'')+'</td><td style="vertical-align:middle;"><textarea wrap="on" class="valueTxt" readonly>'+track.headers[header]+'</textarea></td></tr>');
                                       }
                                       return ret;
                                   }())
@@ -850,6 +859,14 @@ $(document).ready(Dashboard.initialize);
 }
 .popover {
     max-width: 50em !important;
+}
+textarea:read-only {
+    overflow:hidden;
+    width: 100%;
+    border-width: 0px;
+    resize: none;
+    <?php echo $darkTheme==true?'background-color: #2e3338;':'';?>
+    <?php echo $darkTheme==true?'color: #c8c8c8;':'';?>
 }
     </style>
 </head>
