@@ -164,7 +164,7 @@ if(
 var Dashboard = {
   documentTitle : 'IP-Biter Dashboard',
   _dashboardSecret : '<?php echo isset($_REQUEST['secret'])?$_REQUEST['secret']:'';?>',
-  _anonymRedirectService : 'https://anon.to/?',
+  _anonymRedirectService : 'https://anonym.to/?', //'https://anon.to/?',
   _imageCustomHeaderIds : {},
   _trackingLinksIds : {},
   _trackTimestamp : 0,
