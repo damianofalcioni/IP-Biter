@@ -29,7 +29,7 @@ who visualize the image or open the links.
 ## Features
 - Very high configurable tracking image generation
 - Tracking links generation
-- Tracking hided and not recognizable from the target point of view
+- Tracking hidden and not recognizable from the target point of view
 - Integrated Dashboard
 - Self-tracking prevention
 - Possibility to stop and start the tracking at any time
