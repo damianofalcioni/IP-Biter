@@ -34,8 +34,10 @@ Give it a try!
 0) Copy ipb.php in your PHP server and optionally create a .htaccess file as described in the next security notes
     - Some configurable parameters are available in the firsts uncommented PHP lines of the ipb.php file, identified by the comment "START CONFIGURATION SECTION"
 #### Access the Dashboard
-1) Access the dashboard through ipb.php?op=$dashboardPage (or through ipb.php if $dashboardPage=='')
-    - If $dashboardPageSecret!='' then a login page will appear asking for the $dashboardPageSecret value  
+1) Access the dashboard through ipb.php?op=$dashboardPage
+    - $dashboardPage is the PHP variable defined in the "START CONFIGURATION SECTION" of the ipb.php file. The default value is "dashboard" so the default URL is `ipb.php?op=dashboard`
+    - If the PHP variable $dashboardPage is empty you can access the dashboard through the URL `ipb.php`
+    - If the PHP variable $dashboardPageSecret is not empty then a login page will appear, asking for the $dashboardPageSecret value
 #### Create a new configuration
 2) When the dashboard is opened without parameters, a new configuration is created
     - Another empty new configuration can be generate clicking the "New" button
