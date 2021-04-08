@@ -84,7 +84,7 @@ Give it a try!
 DirectoryIndex ipb.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteRule ^(configs/|reports/) - [F]
+    RewriteRule ^(configs/|reports/|error.log) - [F]
 </IfModule>
 ```
 
