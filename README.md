@@ -74,7 +74,7 @@ From this url you are not able to access the relative dashboard.
 Did not trust me?
 Try to hack it as a challange and report me your success; you will be rewarded with a coffee <3
 -->
-Have a look at the [DEMO](http://ipbiter.rf.gd/?op=l&tid=b49c214b-da61-4ff0-8dcd-86c2b6046f6a&lid=dbfb602f-c9c8-4ed8-bdd2-cbf5fd955ad3) (notifications via mail not allowed)
+Have a look at the [DEMO](https://damianofalcioni.alwaysdata.net/ipb.php?op=l&tid=4a33afe3-2a49-455f-b1a1-19e28aa12faf&lid=f2d41e3b-da57-4efb-8490-e0678d5090d2)
 
 ## Support Me <3
 <!--
@@ -84,6 +84,5 @@ when your browser loaded this image, you was been tracked :)
 From this url you are not able to access the relative dashboard. 
 Did not trust me?
 Try to hack it as a challange and report me your success; you will be rewarded with another coffee <3
-[![Buy me a coffee](http://ipbiter.rf.gd/?op=i&tid=b49c214b-da61-4ff0-8dcd-86c2b6046f6a)](https://www.paypal.me/damianofalcioni/0.99)
 -->
-[![Buy me a coffee](https://user-images.githubusercontent.com/8982949/109152792-430c8780-776c-11eb-922c-de3ae9fc5c49.png)](https://www.paypal.me/damianofalcioni/0.99)
+[![Buy me a coffee](https://damianofalcioni.alwaysdata.net/ipb.php?op=i&tid=4a33afe3-2a49-455f-b1a1-19e28aa12faf)](https://www.paypal.me/damianofalcioni/0.99)
