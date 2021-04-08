@@ -26,6 +26,8 @@ IP-Biter is an open source, easy to deploy, tracking framework that generate hig
 to embed in e-mails, sites or chat systems and visualize, in an hacker-friendly dashboard, high detailed reports of the tracked users 
 who visualize the image or open the links.
 
+![](https://user-images.githubusercontent.com/8982949/33372623-f6abdc46-d4fe-11e7-921c-536300d02237.jpg)
+
 ## Features
 - Very high configurable tracking image generation
 - Tracking links generation
@@ -47,12 +49,14 @@ who visualize the image or open the links.
 
 Give it a try!
 
+![](https://user-images.githubusercontent.com/8982949/33380631-09b9720e-d51c-11e7-9da1-b6886569e399.png)
+
 ## Getting Started
 #### Deploy IP-Biter
 0) Copy ipb.php in your PHP server and optionally create a .htaccess file as described in the next security notes
     - Some configurable parameters are available in the firsts uncommented PHP lines of the ipb.php file, identified by the comment "START CONFIGURATION SECTION"
 #### Access the Dashboard
-1) Access the dashboard through ipb.php?op=$dashboardPage
+1) Access the dashboard through ipb.php?op=$dashboardPage (replacing $dashboardPage with its effective value)
     - $dashboardPage is the PHP variable defined in the "START CONFIGURATION SECTION" of the ipb.php file. The default value is "dashboard" so the default URL is `ipb.php?op=dashboard`
     - If the PHP variable $dashboardPage is empty you can access the dashboard through the URL `ipb.php`
     - If the PHP variable $dashboardPageSecret is not empty then a login page will appear, asking for the $dashboardPageSecret value
@@ -63,7 +67,7 @@ Give it a try!
     - It is possible to left the original image url empty. In this case an empty image will be used.
 4) Add tracking links if needed
     - It is possible to left the original link empty. In this case the link will generate a 404 page.
-5) Save the configuration
+5) **Save the configuration**
 6) Distribute the generated image or the links to start the tracking
     - You can click the copy button and paste in a html rich email editor like gmail
     - NOTE: If you try to open the generated image or links but have in the same browser the dashboard page opened and loaded, your request will not be tracked (self-tracking prevention feature)
@@ -92,7 +96,7 @@ From this url you are not able to access the relative dashboard.
 Did not trust me?
 Try to hack it as a challange and report me your success; you will be rewarded with a coffee <3
 -->
-Have a look at the [DEMO](http://ipbiter.rf.gd/?op=l&tid=b49c214b-da61-4ff0-8dcd-86c2b6046f6a&lid=dbfb602f-c9c8-4ed8-bdd2-cbf5fd955ad3) (notifications via mail not allowed)
+Have a look at the [DEMO](https://damianofalcioni.alwaysdata.net/ipb.php?op=l&tid=4a33afe3-2a49-455f-b1a1-19e28aa12faf&lid=f2d41e3b-da57-4efb-8490-e0678d5090d2)
 
 ## Support Me <3
 <!--
@@ -103,7 +107,7 @@ From this url you are not able to access the relative dashboard.
 Did not trust me?
 Try to hack it as a challange and report me your success; you will be rewarded with another coffee <3
 -->
-[![Buy me a coffee](http://ipbiter.rf.gd/?op=i&tid=b49c214b-da61-4ff0-8dcd-86c2b6046f6a)](https://www.paypal.me/damianofalcioni/0.99)
+[![Buy me a coffee](https://damianofalcioni.alwaysdata.net/ipb.php?op=i&tid=4a33afe3-2a49-455f-b1a1-19e28aa12faf)](https://www.paypal.me/damianofalcioni/0.99)
 
 */
 
