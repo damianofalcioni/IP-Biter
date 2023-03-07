@@ -293,9 +293,6 @@ var Dashboard = {
                   name : 'udger.com',
                   url : 'https://udger.com/resources/online-parser?action=analyze&Fip='+ip
               }, {
-                  name : 'dnsstuff.com whois',
-                  url : 'http://www.dnsstuff.com/tools#whois|type=ipv4&&value='+ip
-              }, {
                   name : 'ip-tracker.org',
                   url : 'http://www.ip-tracker.org/locator/ip-lookup.php?ip='+ip
               }, {
