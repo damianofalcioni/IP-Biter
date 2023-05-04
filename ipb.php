@@ -1,7 +1,7 @@
 <?php
 /*
     IP-Biter: The Hacker-friendly Tracking Framework
-    Copyright (C) 2017-2021  Damiano Falcioni (damiano.falcioni@gmail.com)
+    Copyright (C) 2017-2023  Damiano Falcioni (damiano.falcioni@gmail.com)
     
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -199,6 +199,12 @@ var Dashboard = {
               successCallback(data.track);
           }, failureCallback);
       },
+      callConfigDeleteService : function(uuid, successCallback, failureCallback){
+          Utils.callService('deleteConfig', 'id='+uuid, null, successCallback, failureCallback);
+      },
+      callTrackDeleteService : function(uuid, successCallback, failureCallback){
+          Utils.callService('deleteTrack', 'id='+uuid, null, successCallback, failureCallback);
+      },
       callPingTrackService : function(uuid, time, successCallback, failureCallback){
           Utils.callService('ping', 'id='+uuid+'&time='+time+'&rnd='+Utils.generateUUID(), null, function(data){
               successCallback(data.valid);
@@ -273,6 +279,26 @@ var Dashboard = {
               }, 1000);
       },function(error){
           Utils.showError(error, $('#saveConfigMsgs'));
+      });
+  },
+
+  deleteConfiguration : function(){
+      var uuid = $('#trackUUIDTxt').val();
+      Dashboard.services.callConfigDeleteService(uuid, function(successData){
+          Utils.showSuccess('Configuration Deleted', $('#trackUUIDMsgs'));
+          Dashboard.newUUID();
+      },function(error){
+          Utils.showError(error, $('#trackUUIDMsgs'));
+      });
+  },
+
+  deleteTrackingReports : function(){
+      var uuid = $('#trackUUIDTxt').val();
+      Dashboard.services.callTrackDeleteService(uuid, function(successData){
+          Utils.showSuccess('Tracks Deleted', $('#trackReportMsgs'));
+          Dashboard.loadTrackingReports();
+      },function(error){
+          Utils.showError(error, $('#trackReportMsgs'));
       });
   },
   
@@ -618,6 +644,12 @@ var Dashboard = {
       $('#uuidNewBtn').click(function(){
           Dashboard.newUUID();
       });
+      $('#uuidDeleteBtn').click(function(){
+          Dashboard.deleteConfiguration();
+      });
+      $('#deleteTracksBtn').click(function(){
+          Dashboard.deleteTrackingReports();
+      });
       $('#trackUUIDCopyBtn').click(function(){
           $('#trackUUIDTxt').select();
           document.execCommand("copy");
@@ -888,6 +920,7 @@ textarea:read-only {
                     <span class="input-group-btn">
                         <button id="uuidLoadBtn" class="btn btn-default" type="button">Load</button>
                         <button id="uuidNewBtn" class="btn btn-default" type="button">New</button>
+                        <button id="uuidDeleteBtn" class="btn btn-danger" type="button">Delete</button>
                     </span>
                 </div>
             </div>
@@ -1040,7 +1073,8 @@ textarea:read-only {
          
         <div class="panel panel-default">
             <div class="panel-heading link" data-toggle="collapse" data-target="#reportsDiv">
-                <h4 class="panel-title">Tracking Reports<span class="caret"></span></h4>
+                <h4 class="panel-title">Tracking Reports<span class="caret"></span><input id="deleteTracksBtn" class="btn btn-danger btn-xs pull-right" type="button" value="Delete All"></h4>
+                
             </div>
             <div class="panel-collapse list-group" id="reportsDiv">
             </div>
@@ -1172,6 +1206,51 @@ if(isset($_GET['op']) && $_GET['op'] == 'loadTrack'){
     exit();
 }
 
+if(isset($_GET['op']) && $_GET['op'] == 'deleteConfig'){
+    header('Content-Type: application/json');
+    try{
+        if(!isset($_GET['id']) || $_GET['id']=='')
+            throw new Exception('id parameter required');
+        $configUUID = $_GET['id'];
+        if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
+            throw new Exception('Invalid id '. $configUUID);
+        $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
+        $trackUUID = $config->trackUUID;
+        if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
+            throw new Exception('Invalid track id '. $trackUUID);
+        if(!unlink(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
+            throw new Exception('Impossible to delete the configuration with id '. $configUUID);
+        if(!unlink(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
+            throw new Exception('Impossible to delete the reports for the configuration with id '. $configUUID);
+        echo '{"status" : 0}';
+    }catch(Exception $ex){
+        echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
+        $logError($ex->getMessage());
+    }
+    exit();
+}
+
+if(isset($_GET['op']) && $_GET['op'] == 'deleteTrack'){
+    header('Content-Type: application/json');
+    try{
+        if(!isset($_GET['id']) || $_GET['id']=='')
+            throw new Exception('id parameter required');
+        $configUUID = $_GET['id'];
+        if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
+            throw new Exception('Invalid id '. $configUUID);
+        $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
+        $trackUUID = $config->trackUUID;
+        if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
+            throw new Exception('Invalid track id '. $trackUUID);
+        file_put_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json', '{"uuid" : "'.$trackUUID.'", "configUUID" : "'.$configUUID.'", "time" : "'.time().'", "trackList" : []}');
+        echo '{"status" : 0}';
+    }catch(Exception $ex){
+        echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
+        $logError($ex->getMessage());
+    }
+    exit();
+}
+
 if(isset($_GET['op']) && $_GET['op'] == 'ping'){
     header('Content-Type: application/json');
     try{
@@ -1204,7 +1283,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
         
         if(!isset($_SESSION['whois_'.$ip])) {
             /*WHOIS IP Server list
-             whois.afrinic.net -> Africa -  but returns data for ALL locations worldwide
+             whois.afrinic.net -> Africa - but returns data for ALL locations worldwide
              whois.lacnic.net -> Latin America and Caribbean but returns data for ALL locations worldwide
              whois.apnic.net -> Asia/Pacific only
              whois.arin.net -> North America only
@@ -1271,7 +1350,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'preventTracking'){
     header('Content-Type: application/json');
     try{
         if(!isset($_GET['id']) || $_GET['id']=='')
-            throw new Exception('id parameter required');            
+            throw new Exception('id parameter required');
         $configUUID = $_GET['id'];
         if(!setcookie($configUUID, "1"))
             throw new Exception('Impossible to set the cookie: '.(error_get_last()!=null?error_get_last()['message']:'No PHP error detected'));
