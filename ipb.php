@@ -1126,7 +1126,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'shortening'){
             throw new Exception('url parameter required');
         $shortenedUrl = @file_get_contents('http://tinyurl.com/api-create.php?url='.$_GET['url']);
         echo '{"status" : 0, "shortenedUrl" : "'.$shortenedUrl.'"}';
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
     }
@@ -1161,7 +1161,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'save'){
         }
         file_put_contents($configFolderFull.'/'.$json->uuid.'.json', $jsonString);
         echo '{"status" : 0}';
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
     }
@@ -1178,7 +1178,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'loadConfig'){
             throw new Exception('Invalid id '. $configUUID);
         $configString = file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json');
         echo '{"status" : 0, "config" : '.$configString.'}';
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
     }
@@ -1199,7 +1199,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'loadTrack'){
             throw new Exception('Invalid track id '. $trackUUID);
         $trackString = file_get_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json');
         echo '{"status" : 0, "track" : '.$trackString.'}';
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
     }
@@ -1223,7 +1223,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'deleteConfig'){
         if(!unlink(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Impossible to delete the reports for the configuration with id '. $configUUID);
         echo '{"status" : 0}';
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
     }
@@ -1244,7 +1244,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'deleteTrack'){
             throw new Exception('Invalid track id '. $trackUUID);
         file_put_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json', '{"uuid" : "'.$trackUUID.'", "configUUID" : "'.$configUUID.'", "time" : "'.time().'", "trackList" : []}');
         echo '{"status" : 0}';
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
     }
@@ -1264,7 +1264,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'ping'){
             throw new Exception('Invalid id '. $trackUUID);
         $fileTime = filemtime(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json');
         echo '{"status" : 0, "valid" : '.($fileTime <= $localTime?'true':'false').'}';
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
     }
@@ -1339,7 +1339,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
             echo $_SESSION['whois_'.$ip];
         }
         session_write_close();
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
     }
@@ -1355,7 +1355,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'preventTracking'){
         if(!setcookie($configUUID, "1"))
             throw new Exception('Impossible to set the cookie: '.(error_get_last()!=null?error_get_last()['message']:'No PHP error detected'));
         echo '{"status" : 0 }';
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
         $logError($ex->getMessage());
     }
@@ -1398,7 +1398,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'i'){
         http_response_code($config->trackingImageStatusCode);
         if(isset($config->trackingImage) && $config->trackingImage!='')
             echo file_get_contents($config->trackingImage);
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         $logError($ex->getMessage());
         http_response_code(400);
     }
@@ -1441,7 +1441,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'l'){
             header('Location: '.$redirectToUrl);
         else
             http_response_code(404);
-    }catch(Exception $ex){
+    }catch(Throwable $ex){
         $logError($ex->getMessage());
         http_response_code(400);
     }
