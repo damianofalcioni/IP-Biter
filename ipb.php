@@ -118,6 +118,7 @@ $reportFolder = 'reports';
 $errorLogFile = 'error.log';
 $darkTheme = true;
 $debugMode = false;
+$anonymRedirectService = 'https://url.rw/?'; //Leave it empty in order to not use a referer protection service
 /*END CONFIGURATION SECTION*/
 
 error_reporting($debugMode?-1:0);
@@ -169,7 +170,7 @@ if(
 var Dashboard = {
   documentTitle : 'IP-Biter Dashboard',
   _dashboardSecret : '<?php echo isset($_REQUEST['secret'])?$_REQUEST['secret']:'';?>',
-  _anonymRedirectService : 'https://anonym.to/?', //'https://anon.to/?',
+  _anonymRedirectService : '<?php echo $anonymRedirectService;?>',
   _imageCustomHeaderIds : {},
   _trackingLinksIds : {},
   _trackTimestamp : 0,
