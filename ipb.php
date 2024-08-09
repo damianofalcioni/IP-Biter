@@ -32,6 +32,7 @@ sites or chat systems and visualize, in a hacker-friendly dashboard, high detail
 - Tracking links generation
 - Tracking hidden and not recognizable from the target point of view
 - Integrated Dashboard
+- Integrated Overview Dashboard (Admin only)
 - Self-tracking prevention
 - Possibility to stop and start the tracking at any time
 - Possibility to hide the Dashboard and protect its access with a password
@@ -76,6 +77,13 @@ Give it a try!
     - Another configuration can be loaded pasting the "Track UUID" in the dashboard relative field and clicking the "Load" button
 8) The reports will be automatically visualized in the "Tracking Reports" section of the dashboard
 
+## Admin Overview Page
+1) Access the Admin page through ipb.php?op=$adminPage (replacing $adminPage with its effective value)
+    - $adminPage is the PHP variable defined in the "START CONFIGURATION SECTION" of the ipb.php file. The default value is "admin" so the default URL is `ipb.php?op=admin`
+    - If the PHP variable $adminPage is empty the admin page will be not available
+    - If the PHP variable $adminPageSecret is not empty then a login page will appear, asking for the $adminPageSecret value
+2) All the defined configuration will be visualized in a table.
+
 ## Security Notes
 - Change the folders name and the dashboard page in the configuration section in order to improve the security
 - Add the following lines to the .htaccess file in order to deny the access to the "configs" and "reports" folders:
@@ -113,6 +121,8 @@ Try to hack it as a challenge and report me your success; you will be rewarded w
 /*START CONFIGURATION SECTION*/
 $dashboardPage = 'dashboard';
 $dashboardPageSecret = '';
+$adminPage = 'admin';
+$adminPageSecret = '';
 $configFolder = 'configs';
 $reportFolder = 'reports';
 $errorLogFile = 'error.log';
@@ -158,11 +168,12 @@ if(
 ){
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+<html class="no-js" lang="en">
 <head>
     <title>IP-Biter Dashboard</title>
-    <link rel="icon" href="data:image/png;base64,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">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <link rel="icon" href="data:image/png;base64,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">
     <link rel="stylesheet" type="text/css" href="<?php echo $darkTheme==false?'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css':'https://bootswatch.com/3/slate/bootstrap.min.css';?>">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -1089,13 +1100,149 @@ textarea:read-only {
 }
 
 if(
-    ((!isset($_REQUEST['op']) && $dashboardPage == '') || (isset($_REQUEST['op']) && $_REQUEST['op'] == $dashboardPage)) &&
-    $dashboardPageSecret != '' &&
-    (!isset($_REQUEST['secret']) || (isset($_REQUEST['secret']) && $_REQUEST['secret'] != $dashboardPageSecret))
+    ((isset($_REQUEST['op']) && $_REQUEST['op'] == $adminPage)) &&
+    (($adminPageSecret == '') || (isset($_REQUEST['secret']) && $_REQUEST['secret'] == $adminPageSecret))
 ){
 ?>
-<html>
+<!DOCTYPE html>
+<html class="no-js" lang="en">
     <head>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <link rel="stylesheet" type="text/css" href="<?php echo $darkTheme==false?'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css':'https://bootswatch.com/3/slate/bootstrap.min.css';?>">
+        <style type="text/css">
+textarea:read-only {
+    overflow:hidden;
+    width: 100%;
+    border-width: 0px;
+    resize: none;
+    <?php echo $darkTheme==true?'background-color: #2e3338;':'';?>
+    <?php echo $darkTheme==true?'color: #c8c8c8;':'';?>
+}
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+var Admin = {
+    services : {
+      callLoadConfigListService : function(successCallback, failureCallback){
+          Utils.callService('loadConfigList', null, 'secret=<?php echo $adminPageSecret?>', function(data){
+              successCallback(data.configList);
+          }, failureCallback);
+      }
+    },
+    initialize : function(){
+        Admin.services.callLoadConfigListService(function (configList) {
+            var tableHtml = '<table class="table table-condensed"><tbody><tr><th style="vertical-align:middle; white-space:nowrap;">UUID</th><th style="vertical-align:middle; white-space:nowrap;">Tracking Status</th><th style="vertical-align:middle; white-space:nowrap;">Notification Address @</th><th style="vertical-align:middle; white-space:nowrap;">Reports</th><th style="vertical-align:middle; white-space:nowrap;">Last Updates</th><th style="vertical-align:middle; white-space:nowrap;"></th></tr>';
+            configList.forEach(function(config) {
+                tableHtml += '<tr><td style="vertical-align:middle; white-space:nowrap;"><textarea rows="1" wrap="off" class="headerTxt" readonly>'+config.configUUID+'</textarea></td><td style="vertical-align:middle; white-space:nowrap;"><textarea rows="1" wrap="off" class="headerTxt" readonly>'+(config.trackingEnabled?'ENABLED':'DISABLED')+'</textarea></td><td style="vertical-align:middle; white-space:nowrap;"><textarea rows="1" wrap="off" class="headerTxt" readonly>'+config.notificationAddress+'</textarea></td><td style="vertical-align:middle; white-space:nowrap;"><textarea rows="1" wrap="off" class="headerTxt" readonly>'+config.trackListCount+'</textarea></td><td style="vertical-align:middle; white-space:nowrap;"><textarea rows="1" wrap="off" class="headerTxt" readonly>'+config.time+'</textarea></td><td style="vertical-align:middle; white-space:nowrap;"><a class="btn btn-default" role="button" href="'+Utils.getHost()+Utils.getCurrentPath()+'?op=<?php echo $dashboardPage?>&secret=<?php echo $dashboardPageSecret?>&uuid='+config.configUUID+'" target="_blank">View</a></td></tr>';
+            });
+
+            $('#adminDiv').empty().append(
+                tableHtml
+            );
+        }, function(error) {
+            Utils.showError(error, $('#adminMsgs'));
+        });
+    }
+};
+var Utils = {
+  showError : function(error, parentDom){
+      console.log(error);
+      $('<div class="alert alert-danger fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>Error occurred:<br>'+error+'</div>')
+          .fadeTo(5000, 500)
+          .appendTo((parentDom!=null)?parentDom:$('#mainContainer'));
+  },
+  
+  showSuccess : function(info, parentDom){
+      console.log(info);
+      $('<div class="alert alert-success fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>'+info+'</div>')
+          .fadeTo(5000, 500)
+          .slideUp(500, function(){
+              $(this).remove();
+          })
+          .appendTo((parentDom!=null)?parentDom:$('#mainContainer'));
+  },
+
+  getHost : function(){
+      var ret = ((window.location.protocol == '')?'http:':window.location.protocol) + '//' + ((window.location.hostname == '')?'127.0.0.1':window.location.hostname) + ((window.location.port != '')?':'+window.location.port:'');        
+      return ret;
+  },
+  
+  getCurrentPath : function(){
+      return window.location.pathname;
+  },
+
+  callService : function(op, paramsQueryString, postData, successCallback, failureCallback){
+      var serviceUrl = Utils.getCurrentPath()+'?op='+op+(paramsQueryString!=null?'&'+paramsQueryString:'');
+      var ajaxConfig = {
+          type: 'GET',
+          url: serviceUrl,
+          dataType : 'json',
+          async: true,
+          success : function(data, status){
+              if(data.status==0)
+                  successCallback(data);
+              else
+                  failureCallback('Internal error: ' + data.error);
+          },
+          error : function(request, status, error) {
+              failureCallback('Error contacting the service: ' + serviceUrl + ' : ' + status + ' ' + error);
+          }
+      };
+      
+      if(postData!=null){
+          ajaxConfig.type = 'POST';
+          ajaxConfig.processData = false;
+          ajaxConfig.contentType = 'application/x-www-form-urlencoded';
+          ajaxConfig.data = encodeURI(postData);
+      }
+      
+      $.ajax(ajaxConfig);
+  }
+};
+        </script>
+        <script type="text/javascript">
+$(document).ready(Admin.initialize);
+    </script>
+    </head>
+    <body>
+        <div id="mainContainer" class="container">
+            <div class="page-header text-center">
+                <h1>IP-Biter Framework </h1><h1><small>Admin Overview</small></h1>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading link" data-toggle="collapse" data-target="#adminDiv">
+                    <h4 class="panel-title">All Trackings<span class="caret"></span></h4>
+                </div>
+                <div class="panel-collapse list-group" id="adminDiv">
+                </div>
+                <div id="adminMsgs"></div>
+            </div>
+        </div>
+    </body>
+</html>
+<?php
+    exit();
+}
+
+if(
+    (
+        ((!isset($_REQUEST['op']) && $dashboardPage == '') || (isset($_REQUEST['op']) && $_REQUEST['op'] == $dashboardPage)) &&
+        $dashboardPageSecret != '' &&
+        (!isset($_REQUEST['secret']) || (isset($_REQUEST['secret']) && $_REQUEST['secret'] != $dashboardPageSecret))
+    ) || (
+        ((isset($_REQUEST['op']) && $_REQUEST['op'] == $adminPage)) &&
+        $adminPageSecret != '' &&
+        (!isset($_REQUEST['secret']) || (isset($_REQUEST['secret']) && $_REQUEST['secret'] != $adminPageSecret))
+    )
+){
+?>
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+    <head>
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
         <link rel="stylesheet" type="text/css" href="<?php echo $darkTheme==false?'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css':'https://bootswatch.com/3/slate/bootstrap.min.css';?>">
         <style type="text/css">
             form{
@@ -1119,12 +1266,12 @@ if(
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'shortening'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'shortening'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['url']) || $_GET['url']=='')
+        if(!isset($_REQUEST['url']) || $_REQUEST['url']=='')
             throw new Exception('url parameter required');
-        $shortenedUrl = @file_get_contents('http://tinyurl.com/api-create.php?url='.$_GET['url']);
+        $shortenedUrl = @file_get_contents('http://tinyurl.com/api-create.php?url='.$_REQUEST['url']);
         echo '{"status" : 0, "shortenedUrl" : "'.$shortenedUrl.'"}';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
@@ -1133,7 +1280,7 @@ if(isset($_GET['op']) && $_GET['op'] == 'shortening'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'save'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'save'){
     header('Content-Type: application/json');
     try{
         $configFolderFull = __DIR__.'/'.$configFolder;
@@ -1168,12 +1315,41 @@ if(isset($_GET['op']) && $_GET['op'] == 'save'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'loadConfig'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'loadConfigList' && (($adminPageSecret == '') || (isset($_REQUEST['secret']) && $_REQUEST['secret'] == $adminPageSecret))){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['id']) || $_GET['id']=='')
+        $ret = array();
+        $files = array_diff(scandir(__DIR__.'/'.$configFolder.'/'), array('.', '..'));
+        foreach ($files as &$file) {
+            $configUUID = substr($file, 0, -5);
+            $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
+            $trackUUID = $config->trackUUID;
+            if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
+                throw new Exception('Invalid track id '.$trackUUID.' for config '.$configUUID);
+            $reports = json_decode(file_get_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'));
+            $ret[] = (object) [
+                'configUUID' => $configUUID,
+                'trackUUID' => $trackUUID,
+                'time' => date('Y-m-d H:i:s', $reports->time),
+                'trackingEnabled' => $config->trackingEnabled,
+                'notificationAddress' => $config->notificationAddress,
+                'trackListCount' => count($reports->trackList),
+            ];
+        }
+        echo '{"status" : 0, "configList" : '.json_encode($ret).'}';
+    }catch(Throwable $ex){
+        echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
+        $logError($ex->getMessage());
+    }
+    exit();
+}
+
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'loadConfig'){
+    header('Content-Type: application/json');
+    try{
+        if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
-        $configUUID = $_GET['id'];
+        $configUUID = $_REQUEST['id'];
         if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
         $configString = file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json');
@@ -1185,12 +1361,12 @@ if(isset($_GET['op']) && $_GET['op'] == 'loadConfig'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'loadTrack'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'loadTrack'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['id']) || $_GET['id']=='')
+        if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
-        $configUUID = $_GET['id'];
+        $configUUID = $_REQUEST['id'];
         if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
         $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
@@ -1206,12 +1382,12 @@ if(isset($_GET['op']) && $_GET['op'] == 'loadTrack'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'deleteConfig'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'deleteConfig'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['id']) || $_GET['id']=='')
+        if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
-        $configUUID = $_GET['id'];
+        $configUUID = $_REQUEST['id'];
         if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
         $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
@@ -1230,12 +1406,12 @@ if(isset($_GET['op']) && $_GET['op'] == 'deleteConfig'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'deleteTrack'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'deleteTrack'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['id']) || $_GET['id']=='')
+        if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
-        $configUUID = $_GET['id'];
+        $configUUID = $_REQUEST['id'];
         if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
         $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
@@ -1251,15 +1427,15 @@ if(isset($_GET['op']) && $_GET['op'] == 'deleteTrack'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'ping'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'ping'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['id']) || $_GET['id']=='')
+        if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
-        if(!isset($_GET['time']) || $_GET['time']=='')
+        if(!isset($_REQUEST['time']) || $_REQUEST['time']=='')
             throw new Exception('time parameter required');
-        $trackUUID = $_GET['id'];
-        $localTime = $_GET['time'];
+        $trackUUID = $_REQUEST['id'];
+        $localTime = $_REQUEST['time'];
         if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid id '. $trackUUID);
         $fileTime = filemtime(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json');
@@ -1271,12 +1447,12 @@ if(isset($_GET['op']) && $_GET['op'] == 'ping'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'ipwhois'){
     header('Content-Type: application/json; charset=utf8');
     try{
-        if(!isset($_GET['ip']) || $_GET['ip']=='')
+        if(!isset($_REQUEST['ip']) || $_REQUEST['ip']=='')
             throw new Exception('ip parameter required');
-        $ip = $_GET['ip'];
+        $ip = $_REQUEST['ip'];
         
         if(empty(session_id()))
             session_start();
@@ -1346,12 +1522,12 @@ if(isset($_GET['op']) && $_GET['op'] == 'ipwhois'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'preventTracking'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'preventTracking'){
     header('Content-Type: application/json');
     try{
-        if(!isset($_GET['id']) || $_GET['id']=='')
+        if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
-        $configUUID = $_GET['id'];
+        $configUUID = $_REQUEST['id'];
         if(!setcookie($configUUID, "1"))
             throw new Exception('Impossible to set the cookie: '.(error_get_last()!=null?error_get_last()['message']:'No PHP error detected'));
         echo '{"status" : 0 }';
@@ -1362,11 +1538,11 @@ if(isset($_GET['op']) && $_GET['op'] == 'preventTracking'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'i'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'i'){
     try{
-        if(!isset($_GET['tid']) || $_GET['tid']=='')
+        if(!isset($_REQUEST['tid']) || $_REQUEST['tid']=='')
             throw new Exception('tid parameter required');
-        $trackUUID = $_GET['tid'];
+        $trackUUID = $_REQUEST['tid'];
         if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid tid '. $trackUUID);
         $track = json_decode(file_get_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'));
@@ -1405,14 +1581,14 @@ if(isset($_GET['op']) && $_GET['op'] == 'i'){
     exit();
 }
 
-if(isset($_GET['op']) && $_GET['op'] == 'l'){
+if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'l'){
     try{
-        if(!isset($_GET['tid']) || $_GET['tid']=='')
+        if(!isset($_REQUEST['tid']) || $_REQUEST['tid']=='')
             throw new Exception('tid parameter required');
-        if(!isset($_GET['lid']) || $_GET['lid']=='')
+        if(!isset($_REQUEST['lid']) || $_REQUEST['lid']=='')
             throw new Exception('lid parameter required');
-        $trackUUID = $_GET['tid'];
-        $linkUUID = $_GET['lid'];
+        $trackUUID = $_REQUEST['tid'];
+        $linkUUID = $_REQUEST['lid'];
         if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid tid '. $trackUUID);
         $track = json_decode(file_get_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'));

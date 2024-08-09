@@ -11,6 +11,7 @@ who visualize the image or open the links.
 - Tracking links generation
 - Tracking hidden and not recognizable from the target point of view
 - Integrated Dashboard
+- Integrated Overview Dashboard (Admin only)
 - Self-tracking prevention
 - Possibility to stop and start the tracking at any time
 - Possibility to hide the Dashboard and protect its access with a password
@@ -54,6 +55,13 @@ Give it a try!
 7) When the dashboard is opened with the parameter "uuid", the associated configuration is loaded
     - Another configuration can be loaded pasting the "Track UUID" in the dashboard relative field and clicking the "Load" button
 8) The reports will be automatically visualized in the "Tracking Reports" section of the dashboard
+
+## Admin Overview Page
+1) Access the Admin page through ipb.php?op=$adminPage (replacing $adminPage with its effective value)
+    - $adminPage is the PHP variable defined in the "START CONFIGURATION SECTION" of the ipb.php file. The default value is "admin" so the default URL is `ipb.php?op=admin`
+    - If the PHP variable $adminPage is empty the admin page will be not available
+    - If the PHP variable $adminPageSecret is not empty then a login page will appear, asking for the $adminPageSecret value
+2) All the defined configuration will be visualized in a table.
 
 ## Security Notes
 - Change the folders name and the dashboard page in the configuration section in order to improve the security
