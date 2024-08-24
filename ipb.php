@@ -387,11 +387,11 @@ var Dashboard = {
                               '<h4><span class="label label-default">'+track.time+'</span></h4>'
                           )
                       ).append(
-                          $('<div class="col-lg-4">').append(
+                          $('<div class="col-lg-6">').append(
                               $('<div class="input-group">').append(
                                   '<span class="input-group-addon">Remote IP: </span>'
                               ).append(
-                                  $('<input type="text" class="form-control" value="'+track.ip+'" readonly>').click(function(e){
+                                  $('<input type="text" class="form-control" value="'+track.ip+(track.port?':'+track.port:'')+'" readonly>').click(function(e){
                                       $(this).select();
                                       document.execCommand("copy");
                                   })
@@ -1455,7 +1455,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'ipwhois'){
         $ip = $_REQUEST['ip'];
         
         if(empty(session_id()))
-            session_start();
+            session_start(); //TODO: remove here and keep session in the browser
         
         if(!isset($_SESSION['whois_'.$ip])) {
             /*WHOIS IP Server list
@@ -1553,6 +1553,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'i'){
             array_push($track->trackList, array(
                 'time'=>date('d-m-Y H:i:s', time()), 
                 'ip' => $_SERVER['REMOTE_ADDR'],
+                'port' => $_SERVER['REMOTE_PORT'],
                 'headers' => getallheaders()
             ));
             $track->time = time();
@@ -1599,6 +1600,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'l'){
             array_push($track->trackList, array(
                 'time'=>date('d-m-Y H:i:s', time()),
                 'ip' => $_SERVER['REMOTE_ADDR'],
+                'port' => $_SERVER['REMOTE_PORT'],
                 'headers' => getallheaders()
             ));
             $track->time = time();
