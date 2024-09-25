@@ -15,9 +15,22 @@
     
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>. 
-    
-    -------------------------------------------------------------------------
-    
+*/
+
+/*START CONFIGURATION SECTION*/
+$dashboardPage = 'dashboard';
+$dashboardPageSecret = '';
+$adminPage = 'admin';
+$adminPageSecret = '';
+$configFolder = 'configs';
+$reportFolder = 'reports';
+$errorLogFile = 'error.log';
+$darkTheme = true;
+$debugMode = false;
+$anonymRedirectService = 'https://url.rw/?'; //Leave it empty in order to not use a referer protection service
+/*END CONFIGURATION SECTION*/
+
+/*
 README.md
 
 # IP-Biter - Framework
@@ -47,41 +60,43 @@ sites or chat systems and visualize, in a hacker-friendly dashboard, high detail
 
 ...and many many more!
 
+
 Give it a try!
 
 ![](https://user-images.githubusercontent.com/8982949/33380631-09b9720e-d51c-11e7-9da1-b6886569e399.png)
 
 ## Getting Started
 #### Deploy IP-Biter
-0) Copy ipb.php in your PHP server and optionally create a .htaccess file as described in the next security notes
-    - Some configurable parameters are available in the firsts uncommented PHP lines of the ipb.php file, identified by the comment "START CONFIGURATION SECTION"
+0) Copy ipb.php in your PHP server and optionally create a .htaccess file as described in the next security notes.
+    - Some configurable parameters are available in the firsts uncommented PHP lines of the ipb.php file, identified by the comment "START CONFIGURATION SECTION".
 #### Access the Dashboard
-1) Access the dashboard through ipb.php?op=$dashboardPage (replacing $dashboardPage with its effective value)
-    - $dashboardPage is the PHP variable defined in the "START CONFIGURATION SECTION" of the ipb.php file. The default value is "dashboard" so the default URL is `ipb.php?op=dashboard`
-    - If the PHP variable $dashboardPage is empty you can access the dashboard through the URL `ipb.php`
-    - If the PHP variable $dashboardPageSecret is not empty then a login page will appear, asking for the $dashboardPageSecret value
+1) Access the dashboard through ipb.php?op=$dashboardPage (replacing $dashboardPage with its effective value).
+    - $dashboardPage is the PHP variable defined in the "START CONFIGURATION SECTION" of the ipb.php file. The default value is "dashboard" so the default URL is `ipb.php?op=dashboard`.
+    - If the PHP variable $dashboardPage is empty you can access the dashboard through the URL `ipb.php`.
+    - If the PHP variable $dashboardPageSecret is not empty then a login page will appear, asking for the $dashboardPageSecret value.
 #### Create a new configuration
-2) When the dashboard is opened without parameters, a new configuration is created
-    - Another empty new configuration can be generate clicking the "New" button
-3) Configure the tracking image and the advanced setting if needed
+2) When the dashboard is opened without parameters, a new configuration is created.
+    - Another empty new configuration can be generate clicking the "New" button.
+3) Optionally provide mails where you want to be notified.
+4) Configure the tracking image and the advanced setting if needed.
     - It is possible to left the original image url empty. In this case an empty image will be used.
-4) Add tracking links if needed
+5) Add tracking links if needed.
     - It is possible to left the original link empty. In this case the link will generate a 404 page.
-5) **Save the configuration**
-6) Distribute the generated image or the links to start the tracking
-    - You can click the copy button and paste in a html rich email editor like gmail
-    - NOTE: If you try to open the generated image or links but have in the same browser the dashboard page opened and loaded, your request will not be tracked (self-tracking prevention feature)
+6) **Save the configuration**
+7) Distribute the generated image or the links to start the tracking.
+    - You can click the copy button and paste in a html rich email editor like gmail.
+    - NOTE: If you try to open the generated image or links but have in the same browser the dashboard page opened and loaded, your request will not be tracked (self-tracking prevention feature).
     
 #### Load an existing configuration
-7) When the dashboard is opened with the parameter "uuid", the associated configuration is loaded
-    - Another configuration can be loaded pasting the "Track UUID" in the dashboard relative field and clicking the "Load" button
-8) The reports will be automatically visualized in the "Tracking Reports" section of the dashboard
+8) When the dashboard is opened with the parameter "uuid", the associated configuration is loaded.
+    - Another configuration can be loaded pasting the "Track UUID" in the dashboard relative field and clicking the "Load" button,
+9) The reports will be automatically visualized in the "Tracking Reports" section of the dashboard.
 
 ## Admin Overview Page
-1) Access the Admin page through ipb.php?op=$adminPage (replacing $adminPage with its effective value)
-    - $adminPage is the PHP variable defined in the "START CONFIGURATION SECTION" of the ipb.php file. The default value is "admin" so the default URL is `ipb.php?op=admin`
-    - If the PHP variable $adminPage is empty the admin page will be not available
-    - If the PHP variable $adminPageSecret is not empty then a login page will appear, asking for the $adminPageSecret value
+1) Access the Admin page through ipb.php?op=$adminPage (replacing $adminPage with its effective value).
+    - $adminPage is the PHP variable defined in the "START CONFIGURATION SECTION" of the ipb.php file. The default value is "admin" so the default URL is `ipb.php?op=admin`.
+    - If the PHP variable $adminPage is empty the admin page will be not available.
+    - If the PHP variable $adminPageSecret is not empty then a login page will appear, asking for the $adminPageSecret value.
 2) All the defined configuration will be visualized in a table.
 
 ## Security Notes
@@ -115,36 +130,24 @@ Did not trust me?
 Try to hack it as a challenge and report me your success; you will be rewarded with another coffee <3
 -->
 [![Buy me a coffee](https://damianofalcioni.alwaysdata.net/ipb.php?op=i&tid=4a33afe3-2a49-455f-b1a1-19e28aa12faf)](https://www.paypal.me/damianofalcioni/0.99)
-
 */
 
-/*START CONFIGURATION SECTION*/
-$dashboardPage = 'dashboard';
-$dashboardPageSecret = '';
-$adminPage = 'admin';
-$adminPageSecret = '';
-$configFolder = 'configs';
-$reportFolder = 'reports';
-$errorLogFile = 'error.log';
-$darkTheme = true;
-$debugMode = false;
-$anonymRedirectService = 'https://url.rw/?'; //Leave it empty in order to not use a referer protection service
-/*END CONFIGURATION SECTION*/
-
 error_reporting($debugMode?-1:0);
-if(function_exists('ini_set'))
+if(function_exists('ini_set')) {
     ini_set("display_errors", $debugMode?1:0);
+}
 
-$logError = function($message) use ($errorLogFile){
-    file_put_contents(__DIR__.'/'.$errorLogFile, date('d/m/Y H:i:s', time()).' '.$_SERVER['REMOTE_ADDR'].' '.$message."\r\n", FILE_APPEND);
+function logError($message) {
+    global $errorLogFile;
+    file_put_contents(__DIR__.'/'.$errorLogFile, date('d/m/Y H:i:s', time()).' '.$_SERVER['REMOTE_ADDR'].' '.$message."\r\n", FILE_APPEND | LOCK_EX);
 };
 
-function shutdownHandler($logError) {
+function shutdownHandler() {
     $error = error_get_last();
     if ($error!=null)
-        $logError("ERROR on line ".$error['line'].": ".$error['message']);
+        logError("ERROR on line ".$error['line'].": ".$error['message']);
 }
-register_shutdown_function('shutdownHandler', $logError);
+register_shutdown_function('shutdownHandler');
 
 if(!function_exists('getallheaders')){
     function getallheaders() {
@@ -160,6 +163,106 @@ if(!function_exists('getallheaders')){
         } 
         return $retval; 
     }
+}
+
+function file_get_contents_url($url, $payload, $contentType) {
+    $protocol = strtolower(strtok($url, ':'));
+    if(($protocol == 'http' || $protocol == 'https') && !ini_get("allow_url_fopen"))
+        throw new Exception('Can not open urls with file_get_contents as allow_url_fopen is set to false.');
+    if(!in_array($protocol, stream_get_wrappers()))
+        throw new Exception('Can not open '.$protocol.' urls with file_get_contents as no wrapper available.'.($protocol == 'https' ? ' OPENSSL extension is '.(!extension_loaded('openssl')?'NOT ':'').'enabled' : ''));
+
+    $content = @file_get_contents($url, false, stream_context_create(array(
+        'http'=>array(
+            'method'=>$payload!=null ? 'POST' : 'GET',
+            'header'=>($contentType!=null ? 'Content-Type: '.$contentType.'\r\n' : '').($payload!=null ? 'Content-Length: '.strlen($payload).'\r\n' : ''),
+            'content'=>$payload!=null ? $payload : '',
+            'ignore_errors'=>true
+        ),
+        'ssl'=>file_exists(dirname(__FILE__).'/cacert.pem')?array(
+            'cafile'=>dirname(__FILE__).'/cacert.pem'  //downloaded from https://curl.se/ca/cacert.pem
+        ):array()
+    )));
+    if ($content === false)
+        throw new Exception('Error calling '.$url.': '.(error_get_last()!=null?error_get_last()['message']:'No error reported'));
+    if($protocol == 'http' || $protocol == 'https') {
+        preg_match('{HTTP\/\S*\s(\d{3})}', $http_response_header[0], $match);
+        $httpReturnCode = intval($match[1]);
+        if ($httpReturnCode < 200 || $httpReturnCode > 299)
+            throw new Exception('URL returned http code '.$httpReturnCode.': '.$content);
+    }
+    return $content;
+}
+
+function curl($url, $payload, $contentType) {
+    try {
+        if(!function_exists('curl_init'))
+            throw new Exception('Function curl_init not found. PHP CURL extension is '.(!extension_loaded('curl')?'NOT ':'').'enabled');
+        $ch = curl_init();
+        if ($ch === false)
+            throw new Exception('PHP CURL: failed to initialize');
+        if (isset($payload)) {
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
+        }
+        if (isset($contentType))
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:'.$contentType));
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $url);
+        if (file_exists(dirname(__FILE__).'/cacert.pem'))
+           curl_setopt($ch, CURLOPT_CAINFO, dirname(__FILE__).'/cacert.pem');
+        $content = curl_exec($ch);
+        if ($content === false)
+            throw new Exception(curl_error($ch), curl_errno($ch));
+        $httpReturnCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if ($httpReturnCode < 200 || $httpReturnCode > 299)
+            throw new Exception('PHP CURL: URL call returned error code '.$httpReturnCode.': '.$content);
+        return $content;
+    } catch(Throwable $ex) {
+        throw $ex;
+    } finally {
+        if (is_resource($ch)) {
+            curl_close($ch);
+        }
+    }
+}
+
+function req($url, $payload, $contentType) {
+    $errorMsg = '';
+    try {
+        return file_get_contents_url($url, $payload, $contentType);
+    } catch(Throwable $ex) {
+        $errorMsg = 'file_get_contents_url: '.$ex->getMessage();
+    }
+    try {
+        return curl($url, $payload, $contentType);
+    } catch(Throwable $ex) {
+        $errorMsg = $errorMsg.'\ncurl: '.$ex->getMessage();
+    }
+    throw new Exception('Error contacting '.$url.': '.$errorMsg);
+}
+
+function sendNotifications($config, $track){
+    global $dashboardPage;
+    $notificationText = 'Your tracking image/link has been accessed right now by <b>'.$track['ip'].'</b>. Check all the details in the <a href="'.(isset($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'],'?').'?op='.$dashboardPage.'&uuid='.$config->uuid.'">DASHBOARD</a>';
+    try {
+        if(isset($config->notificationAddress) && $config->notificationAddress!=''){
+            if(!function_exists('mail'))
+                throw new Exception('PHP mail function not available');
+            $mailText = '<html><body><p>'.$notificationText.'</p></body></html>';
+            $mailSent = mail($config->notificationAddress, '[Tracking Live Report] '.$config->mailId, wordwrap($mailText, 70, "\r\n"), "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n");
+            if(!$mailSent)
+                throw new Exception('Mail not sent: '. error_get_last()!=null?error_get_last()['message']:'No PHP error detected');
+        }
+    } catch(Throwable $ex) {
+        logError('Failed to send notification for config UUID '.$config->uuid.' : '.$ex->getMessage());
+    }
+}
+
+function validateUUID($uuid) {
+    if (!is_string($uuid) || (preg_match('/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i', $uuid) !== 1))
+        throw 'invalid uuid: '.$uuid;
 }
 
 if(
@@ -970,12 +1073,12 @@ textarea:read-only {
                     <div class="row form-group">
                         <div class="col-lg-12">
                             <div class="input-group">
-                                <span class="input-group-addon">Notification address @</span>
+                                <span class="input-group-addon">Mail notification address @</span>
                                 <input id="notificationMailTxt" type="text" class="form-control" placeholder="E-mail where to receive notifications on new tracks">
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="panel panel-default">
                         <div class="panel-heading"><h4 class="panel-title">Tracking Image</h4></div>
                         <div class="panel-body" id="trackingImageConfigDiv">
@@ -1271,11 +1374,11 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'shortening'){
     try{
         if(!isset($_REQUEST['url']) || $_REQUEST['url']=='')
             throw new Exception('url parameter required');
-        $shortenedUrl = @file_get_contents('http://tinyurl.com/api-create.php?url='.$_REQUEST['url']);
+        $shortenedUrl = req('http://tinyurl.com/api-create.php?url='.$_REQUEST['url'], null, null);
         echo '{"status" : 0, "shortenedUrl" : "'.$shortenedUrl.'"}';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1287,10 +1390,14 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'save'){
         $reportFolderFull = __DIR__.'/'.$reportFolder;
         $jsonString = file_get_contents('php://input');
         $json = json_decode($jsonString);
+        if ($json === null)
+            throw new Exception('error on json_decode the string: '.$jsonString );
         if(!isset($json->uuid) || $json->uuid=='')
             throw new Exception('uuid not specified');
         if(!isset($json->trackUUID) || $json->trackUUID=='')
             throw new Exception('trackUUID not specified');
+        validateUUID($json->uuid);
+        validateUUID($json->trackUUID);
         if (!file_exists($configFolderFull))
             mkdir($configFolderFull, 0777, true);
         if (!file_exists($reportFolderFull))
@@ -1299,7 +1406,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'save'){
             file_put_contents($reportFolderFull.'/'.$json->trackUUID.'.json', '{"uuid" : "'.$json->trackUUID.'", "configUUID" : "'.$json->uuid.'", "time" : "'.time().'", "trackList" : []}');
         } else {
             $reportJson = json_decode(file_get_contents($reportFolderFull.'/'.$json->trackUUID.'.json'));
-            if($reportJson->configUUID != $json->uuid){
+            if($reportJson !== null && $reportJson->configUUID != $json->uuid){
                 throw new Exception('trackUUID already in use by another configuration.');
                 //SECURITY FIX: allowing the uuid update into the tracking file (next two lines) give the possibility for a tracked user to save a new configuration using its traking uuid, stealing its traking file to the original configuration
                 //$reportJson->configUUID = $json->uuid;
@@ -1310,7 +1417,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'save'){
         echo '{"status" : 0}';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1333,13 +1440,13 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'loadConfigList' && (($adminPage
                 'time' => date('Y-m-d H:i:s', $reports->time),
                 'trackingEnabled' => $config->trackingEnabled,
                 'notificationAddress' => $config->notificationAddress,
-                'trackListCount' => count($reports->trackList),
+                'trackListCount' => isset($reports->trackList)?count($reports->trackList):0,
             ];
         }
         echo '{"status" : 0, "configList" : '.json_encode($ret).'}';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1350,13 +1457,14 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'loadConfig'){
         if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
         $configUUID = $_REQUEST['id'];
+        validateUUID($configUUID);
         if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
         $configString = file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json');
         echo '{"status" : 0, "config" : '.$configString.'}';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1367,6 +1475,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'loadTrack'){
         if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
         $configUUID = $_REQUEST['id'];
+        validateUUID($configUUID);
         if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
         $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
@@ -1377,7 +1486,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'loadTrack'){
         echo '{"status" : 0, "track" : '.$trackString.'}';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1388,6 +1497,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'deleteConfig'){
         if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
         $configUUID = $_REQUEST['id'];
+        validateUUID($configUUID);
         if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
         $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
@@ -1401,7 +1511,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'deleteConfig'){
         echo '{"status" : 0}';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1412,6 +1522,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'deleteTrack'){
         if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
         $configUUID = $_REQUEST['id'];
+        validateUUID($configUUID);
         if(!file_exists(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'))
             throw new Exception('Invalid id '. $configUUID);
         $config = json_decode(file_get_contents(__DIR__.'/'.$configFolder.'/'.$configUUID.'.json'));
@@ -1422,7 +1533,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'deleteTrack'){
         echo '{"status" : 0}';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1436,13 +1547,14 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'ping'){
             throw new Exception('time parameter required');
         $trackUUID = $_REQUEST['id'];
         $localTime = $_REQUEST['time'];
+        validateUUID($trackUUID);
         if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid id '. $trackUUID);
         $fileTime = filemtime(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json');
         echo '{"status" : 0, "valid" : '.($fileTime <= $localTime?'true':'false').'}';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1478,7 +1590,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'ipwhois'){
             $lineCount = 0;
             while(!feof($fp)){
                 $line = fgets($fp);
-                if(trim($line[0])!='' && $line[0]!='#' && $line[0]!='%'){
+                if($line !== false && trim($line[0])!='' && $line[0]!='#' && $line[0]!='%'){
                     $whoisResultString.=$line;
                     $lineCount++;
                     if(strpos($line, ':') !== false){
@@ -1517,7 +1629,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'ipwhois'){
         session_write_close();
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1528,12 +1640,13 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'preventTracking'){
         if(!isset($_REQUEST['id']) || $_REQUEST['id']=='')
             throw new Exception('id parameter required');
         $configUUID = $_REQUEST['id'];
+        validateUUID($configUUID);
         if(!setcookie($configUUID, "1"))
             throw new Exception('Impossible to set the cookie: '.(error_get_last()!=null?error_get_last()['message']:'No PHP error detected'));
         echo '{"status" : 0 }';
     }catch(Throwable $ex){
         echo '{"status" : -1, "error" : "'.$ex->getMessage().'"}';
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
     }
     exit();
 }
@@ -1543,6 +1656,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'i'){
         if(!isset($_REQUEST['tid']) || $_REQUEST['tid']=='')
             throw new Exception('tid parameter required');
         $trackUUID = $_REQUEST['tid'];
+        validateUUID($trackUUID);
         if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid tid '. $trackUUID);
         $track = json_decode(file_get_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'));
@@ -1558,13 +1672,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'i'){
             ));
             $track->time = time();
             file_put_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json', json_encode($track));
-            if(function_exists('mail') && isset($config->notificationAddress) && $config->notificationAddress!=''){
-                $mailText = '<html><body><p>Your tracking image has been visualized right now by '.$_SERVER['REMOTE_ADDR'].'.</p><p>Check all the details in the <a href="'.(isset($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'],'?').'?op='.$dashboardPage.'&uuid='.$config->uuid.'">DASHBOARD</a></p></body></html>';
-                $mailSent = mail($config->notificationAddress, '[Tracking Live Report] '.$config->mailId, wordwrap($mailText, 70, "\r\n"), "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n");
-                if(!$mailSent)
-                    $logError("Mail not sended: ". error_get_last()!=null?error_get_last()['message']:'No PHP error detected');
-                
-            }
+            sendNotifications($config, end($track->trackList));
         }  
         $headerAddedList = array();
         foreach($config->trackingImageCustomHeaderList as $header){
@@ -1574,9 +1682,9 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'i'){
         }
         http_response_code($config->trackingImageStatusCode);
         if(isset($config->trackingImage) && $config->trackingImage!='')
-            echo file_get_contents($config->trackingImage);
+            echo req($config->trackingImage, null, null);
     }catch(Throwable $ex){
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
         http_response_code(400);
     }
     exit();
@@ -1590,6 +1698,8 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'l'){
             throw new Exception('lid parameter required');
         $trackUUID = $_REQUEST['tid'];
         $linkUUID = $_REQUEST['lid'];
+        validateUUID($trackUUID);
+        validateUUID($linkUUID);
         if(!file_exists(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'))
             throw new Exception('Invalid tid '. $trackUUID);
         $track = json_decode(file_get_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json'));
@@ -1605,12 +1715,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'l'){
             ));
             $track->time = time();
             file_put_contents(__DIR__.'/'.$reportFolder.'/'.$trackUUID.'.json', json_encode($track));
-            if(function_exists('mail') && isset($config->notificationAddress) && $config->notificationAddress!=''){
-                $mailText = '<html><body><p>Your tracking link has been clicked right now by '.$_SERVER['REMOTE_ADDR'].'.</p><p>Check all the details in the <a href="'.(isset($_SERVER['HTTPS'])?'https':'http').'://'.$_SERVER['HTTP_HOST'].strtok($_SERVER['REQUEST_URI'],'?').'?op='.$dashboardPage.'&uuid='.$config->uuid.'">DASHBOARD</a></p></body></html>';
-                $mailSent = mail($config->notificationAddress, '[Tracking Live Report] '.$config->mailId, wordwrap($mailText, 70, "\r\n"), "MIME-Version: 1.0\r\nContent-type:text/html;charset=UTF-8\r\n");
-                if(!$mailSent)
-                    $logError("Mail not sended: ". error_get_last()!=null?error_get_last()['message']:'No PHP error detected');
-            }
+            sendNotifications($config, end($track->trackList));
         }
         if(!isset($config->trackingLinks->$linkUUID))
             throw new Exception('Impossible to find the link '.$linkUUID);
@@ -1620,7 +1725,7 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'l'){
         else
             http_response_code(404);
     }catch(Throwable $ex){
-        $logError($ex->getMessage());
+        logError($ex->getMessage());
         http_response_code(400);
     }
     exit();
@@ -1628,6 +1733,6 @@ if(isset($_REQUEST['op']) && $_REQUEST['op'] == 'l'){
 
 header('Content-Type: application/json');
 echo '{"status" : -1, "error" : "op parameter not valid"}';
-$logError('op parameter not valid');
+logError('op parameter not valid');
 exit();
 ?>
