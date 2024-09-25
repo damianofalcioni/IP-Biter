@@ -50,7 +50,7 @@ sites or chat systems and visualize, in a hacker-friendly dashboard, high detail
 - Possibility to stop and start the tracking at any time
 - Possibility to hide the Dashboard and protect its access with a password
 - Live tracking reports from the Dashboard
-- Tracking reports live delivered to a configurable mail address
+- Tracking reports live delivered to a configurable mail address and telegram chat
 - Different IP analysis services
 - User-Agent analysis service
 - Integrate URL shortening service
@@ -77,7 +77,9 @@ Give it a try!
 #### Create a new configuration
 2) When the dashboard is opened without parameters, a new configuration is created.
     - Another empty new configuration can be generate clicking the "New" button.
-3) Optionally provide mails where you want to be notified.
+3) Optionally provide mails and Telegram Bot token and chat id where you want to be notified.
+    - Telegram Note: To obtain a token, create a Telegram Bot following the instructions under [https://core.telegram.org/bots/features#botfather](https://core.telegram.org/bots/features#botfather).
+    - Telegram Note: To obtain a chat id, start a new chat with your bot, then open `https://api.telegram.org/bot<token>/getUpdates` replacing `<token>` with your bot token, then you will find your chat id under result/message/chat/id of the returned JSON.
 4) Configure the tracking image and the advanced setting if needed.
     - It is possible to left the original image url empty. In this case an empty image will be used.
 5) Add tracking links if needed.
@@ -258,6 +260,16 @@ function sendNotifications($config, $track){
     } catch(Throwable $ex) {
         logError('Failed to send notification for config UUID '.$config->uuid.' : '.$ex->getMessage());
     }
+    try {
+        if(isset($config->telegramToken) && $config->telegramToken!='' && isset($config->telegramChatId) && $config->telegramChatId!=''){
+            $notificationText = str_replace('localhost', '127.0.0.1', $notificationText); //Telegram bug: localhost not parsed
+            $telegramSent = req('https://api.telegram.org/bot'.$config->telegramToken.'/sendMessage', json_encode(array('chat_id'=>$config->telegramChatId, 'parse_mode'=>'html', 'text'=>'[Tracking Live Report] '.$config->mailId."\n".$notificationText)), 'application/json');
+            if(json_decode($telegramSent)->ok === false)
+                throw new Exception('Failed to send telegram message to chat '.$config->telegramChatId.': '.$telegramSent);
+        }
+    } catch(Throwable $ex) {
+        logError('Failed to send notification for config UUID '.$config->uuid.' : '.$ex->getMessage());
+    }
 }
 
 function validateUUID($uuid) {
@@ -344,6 +356,8 @@ var Dashboard = {
           $('#trackingEnabledChk').prop('checked', configJson.trackingEnabled);
           $('#mailIdTxt').val(configJson.mailId);
           $('#notificationMailTxt').val(configJson.notificationAddress);
+          $('#notificationTelegramTokenTxt').val(configJson.telegramToken);
+          $('#notificationTelegramChatIdTxt').val(configJson.telegramChatId);
           $('#trackingImageOriginalUrlTxt').val(configJson.trackingImage).trigger('change');
           $('#trackingImageHTTPStatusTxt').val(configJson.trackingImageStatusCode);
           configJson.trackingImageCustomHeaderList.forEach(function(item){
@@ -677,6 +691,8 @@ var Dashboard = {
           trackingEnabled : $('#trackingEnabledChk').is(':checked'),
           mailId : $('#mailIdTxt').val(),
           notificationAddress : $('#notificationMailTxt').val(),
+          telegramToken: $('#notificationTelegramTokenTxt').val(),
+          telegramChatId: $('#notificationTelegramChatIdTxt').val(),
           trackingImage : $('#trackingImageOriginalUrlTxt').val(),
           trackingImageStatusCode : parseInt($('#trackingImageHTTPStatusTxt').val()),
           trackingImageCustomHeaderList : function(){
@@ -1079,6 +1095,17 @@ textarea:read-only {
                         </div>
                     </div>
 
+                    <div class="row form-group">
+                        <div class="col-lg-12">
+                            <div class="input-group">
+                                <span class="input-group-addon">Telegram notification bot token</span>
+                                <input id="notificationTelegramTokenTxt" type="text" class="form-control" placeholder="Telegram Bot token that will send notifications on new tracks">
+                                <span class="input-group-addon">Chat ID</span>
+                                <input id="notificationTelegramChatIdTxt" type="text" class="form-control" placeholder="Telegram Chat ID to use">
+                            </div>
+                        </div>
+                    </div>
+                    
                     <div class="panel panel-default">
                         <div class="panel-heading"><h4 class="panel-title">Tracking Image</h4></div>
                         <div class="panel-body" id="trackingImageConfigDiv">
