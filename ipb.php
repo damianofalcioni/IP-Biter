@@ -79,7 +79,7 @@ Give it a try!
     - Another empty new configuration can be generate clicking the "New" button.
 3) Optionally provide mails and Telegram Bot token and chat id where you want to be notified.
     - Telegram Note: To obtain a token, create a Telegram Bot following the instructions under [https://core.telegram.org/bots/features#botfather](https://core.telegram.org/bots/features#botfather).
-    - Telegram Note: To obtain a chat id, start a new chat with your bot, then open `https://api.telegram.org/bot<token>/getUpdates` replacing `<token>` with your bot token, then you will find your chat id under result/message/chat/id of the returned JSON.
+    - Telegram Note: To obtain a chat id, start a new chat with your bot, then open `https://api.telegram.org/bot<token>/getUpdates` replacing `<token>` with your bot token. You will find your chat id under result/message/chat/id of the returned JSON. More instructions for groups or topics chat id can be found on [this Gist](https://gist.github.com/nafiesl/4ad622f344cd1dc3bb1ecbe468ff9f8a).
 4) Configure the tracking image and the advanced setting if needed.
     - It is possible to left the original image url empty. In this case an empty image will be used.
 5) Add tracking links if needed.
