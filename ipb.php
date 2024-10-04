@@ -274,7 +274,7 @@ function sendNotifications($config, $track){
 
 function validateUUID($uuid) {
     if (!is_string($uuid) || (preg_match('/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i', $uuid) !== 1))
-        throw 'invalid uuid: '.$uuid;
+        throw new Exception('invalid uuid: '.$uuid);
 }
 
 if(
